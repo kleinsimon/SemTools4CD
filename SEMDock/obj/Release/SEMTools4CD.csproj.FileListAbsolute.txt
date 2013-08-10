@@ -1,0 +1,17 @@
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\bin\Release\SemTools_starter.gms
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\bin\Release\SEMTools4CD.dll.config
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\bin\Release\SEMTools4CD.dll
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\bin\Release\SEMTools4CD.pdb
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.csprojResolveAssemblyReference.cache
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\Interop.CorelDRAW.dll
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\Interop.VGCore.dll
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.csproj.ResolveComReference.cache
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMDock.g.cs
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD_MarkupCompile.cache
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD_MarkupCompile.lref
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMDock.baml
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.g.resources
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.Properties.Resources.resources
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.csproj.GenerateResource.Cache
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.dll
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.pdb

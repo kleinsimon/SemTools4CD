@@ -1,0 +1,16 @@
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\bin\Release\Tester.exe.config
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\bin\Release\SemTools_starter.gms
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\bin\Release\Tester.exe
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\bin\Release\Tester.pdb
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\bin\Release\SEMTools4CD.dll
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\bin\Release\SEMTools4CD.pdb
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Release\Tester.csprojResolveAssemblyReference.cache
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Release\MainWindow.baml
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Release\MainWindow.g.cs
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Release\App.g.cs
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Release\Tester_MarkupCompile.cache
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Release\Tester.g.resources
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Release\Tester.Properties.Resources.resources
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Release\Tester.csproj.GenerateResource.Cache
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Release\Tester.exe
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Release\Tester.pdb

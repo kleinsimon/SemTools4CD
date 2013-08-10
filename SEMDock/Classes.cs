@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
@@ -77,7 +78,7 @@ namespace SEMTools4CD
     }
 
     [Serializable,DataContract]
-    public class semImageData
+    public class semImageData : INotifyPropertyChanged
     {
         [DataMember(Name = "ULtext")]
         private string _ULtext = "";
@@ -112,48 +113,123 @@ namespace SEMTools4CD
         [DataMember(Name = "BarMaxWidth")]
         private float _BarMaxWidth = 5f;
 
-        public string ULtext { get { return _ULtext; } set { _ULtext = value; } }
-        public string URtext { get { return _URtext; } set { _URtext = value; } }
-        public string BLtext { get { return _BLtext; } set { _BLtext = value; } }
-        public string BarText { get { return _BarText; } set { _BarText = value; } }
-        public string filename { get { return _filename; } set { _filename = value; } }
-        public float FontSize { get { return _FontSize; } set { _FontSize = value; } }
-        public float BarWidth { get { return _BarWidth; } set { _BarWidth = value; } }
-        public float BorderWidth { get { return _BorderWidth; } set { _BorderWidth = value; } }
-        public float Width { get { return _Width; } set { _Width = value; } }
-        public float Height { get { return _Height; } set { _Height = value; } }
-        public double BarLength { get { return _BarLength; } set { _BarLength = value; } }
-        public double Calibration { get { return _Calibration; } set { _Calibration = value; } }
-        public int Mode { get { return _Mode; } set { _Mode = value; } }
-        public bool? TextBold { get { return _TextBold; } set { _TextBold = value; } }
-        public float BarMinWidth { get { return _BarMinWidth; } set { _BarMinWidth = value; } }
-        public float BarMaxWidth { get { return _BarMaxWidth; } set { _BarMaxWidth = value; } }
+        public string ULtext { get { return _ULtext; } set { _ULtext = value; NotifyPropertyChanged(""); } }
+        public string URtext { get { return _URtext; } set { _URtext = value; NotifyPropertyChanged(""); } }
+        public string BLtext { get { return _BLtext; } set { _BLtext = value; NotifyPropertyChanged(""); } }
+        public string BarText { get { return _BarText; } set { _BarText = value; NotifyPropertyChanged(""); } }
+        public string filename { get { return _filename; } set { _filename = value; NotifyPropertyChanged(""); } }
+        public float FontSize { get { return _FontSize; } set { _FontSize = value; NotifyPropertyChanged(""); } }
+        public float BarWidth { get { return _BarWidth; } set { _BarWidth = value; NotifyPropertyChanged(""); } }
+        public float BorderWidth { get { return _BorderWidth; } set { _BorderWidth = value; NotifyPropertyChanged(""); } }
+        public float Width { get { return _Width; } set { _Width = value; NotifyPropertyChanged(""); } }
+        public float Height { get { return _Height; } set { _Height = value; NotifyPropertyChanged(""); } }
+        public double BarLength { get { return _BarLength; } set { _BarLength = value; NotifyPropertyChanged(""); } }
+        public double Calibration { get { return _Calibration; } set { _Calibration = value; NotifyPropertyChanged(""); } }
+        public int Mode { get { return _Mode; } set { _Mode = value; NotifyPropertyChanged(""); } }
+        public bool? TextBold { get { return _TextBold; } set { _TextBold = value; NotifyPropertyChanged(""); } }
+        public float BarMinWidth { get { return _BarMinWidth; } set { _BarMinWidth = value; NotifyPropertyChanged(""); } }
+        public float BarMaxWidth { get { return _BarMaxWidth; } set { _BarMaxWidth = value; NotifyPropertyChanged(""); } }
 
 
         public override string ToString()
         {
-            System.Runtime.Serialization.Json.DataContractJsonSerializer js = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(semImageData));
-            Stream s = new MemoryStream();
-            js.WriteObject(s, this);
-            s.Position = 0;
-            StreamReader sr = new StreamReader(s);
-            return sr.ReadToEnd();
+            return JsonConverter<semImageData>.Serialize(this);
         }
 
         public static semImageData FromString(string JsonData)
         {
-            System.Runtime.Serialization.Json.DataContractJsonSerializer js = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(semImageData));
-            byte[] bA = Encoding.UTF8.GetBytes(JsonData);
-            Stream s = new MemoryStream(bA);
-            s.Position = 0;
-            semImageData tmp = (semImageData)js.ReadObject(s);
-            return tmp;
+            return JsonConverter<semImageData>.Deserialize(JsonData);
         }
 
         public semImageData Clone()
         {
             return semImageData.FromString(this.ToString());
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void NotifyPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+        }
+    }
+
+    public static class JsonConverter<T>
+    {
+        public static string Serialize(T input)
+        {
+            System.Runtime.Serialization.Json.DataContractJsonSerializer js = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(T));
+            Stream s = new MemoryStream();
+            js.WriteObject(s, input);
+            s.Position = 0;
+            StreamReader sr = new StreamReader(s);
+            return sr.ReadToEnd();
+        }
+
+        public static T Deserialize(string JsonData)
+        {
+            System.Runtime.Serialization.Json.DataContractJsonSerializer js = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(T));
+            byte[] bA = Encoding.UTF8.GetBytes(JsonData);
+            Stream s = new MemoryStream(bA);
+            s.Position = 0;
+            T tmp = (T)js.ReadObject(s);
+            return tmp;
+        }
+    }
+
+    public class BooleanConverter<T> : IValueConverter
+    {
+        public BooleanConverter(T trueValue, T falseValue)
+        {
+            True = trueValue;
+            False = falseValue;
+        }
+
+        public T True { get; set; }
+        public T False { get; set; }
+
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value is bool && ((bool)value) ? True : False;
+        }
+
+        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value is T && EqualityComparer<T>.Default.Equals((T)value, True);
+        }
+    }
+
+    public sealed class BooleanToVisibilityConverter : BooleanConverter<Visibility>
+    {
+        public BooleanToVisibilityConverter() :
+            base(Visibility.Visible, Visibility.Collapsed) { }
+    }
+
+    [ValueConversion(typeof(bool), typeof(bool))]
+    public class InverseBooleanConverter : IValueConverter
+    {
+        #region IValueConverter Members
+
+        public object Convert(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            if (targetType != typeof(bool))
+                throw new InvalidOperationException("The target must be a boolean");
+
+            return !(bool)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            if (targetType != typeof(bool))
+                throw new InvalidOperationException("The target must be a boolean");
+
+            return !(bool)value;
+        }
+
+        #endregion
     }
 
     public class semImage
@@ -223,6 +299,32 @@ namespace SEMTools4CD
             else res = scale.ToString() + " µm";
 
             return res;
+        }
+    }
+
+    [Serializable, DataContract]
+    public class CalibItem : INotifyPropertyChanged
+    {
+        [DataMember(Name = "Name")]
+        private string _name = "New Item";
+        [DataMember(Name = "Calibration")]
+        private double _calibration = 1d;
+
+        public string Name { get { return _name; } set { _name = value; NotifyPropertyChanged(""); } }
+        public double Calibration { get { return _calibration; } set { _calibration = value; NotifyPropertyChanged(""); } }
+
+        public CalibItem(string name, double calib)
+        {
+            Name = name;
+            Calibration = calib;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void NotifyPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
     }
 

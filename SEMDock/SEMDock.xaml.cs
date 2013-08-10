@@ -51,6 +51,9 @@ namespace SEMTools4CD
         ObservableCollection<TIFFitem> _TiffItems = new ObservableCollection<TIFFitem>();
         public ObservableCollection<TIFFitem> TiffItems { get { return _TiffItems; } }
 
+        ObservableCollection<CalibItem> _calibList = new ObservableCollection<CalibItem>();
+        public ObservableCollection<CalibItem> calibList { get { return _calibList; } }
+
         public SEMDock()
         {
             InitializeComponent();
@@ -63,7 +66,6 @@ namespace SEMTools4CD
             initWin();
             CDWin = (CorelDRAW.Application)app;
             CDWin.SelectionChange += CDWin_SelectionChange;
-
         }
 
         void initWin()
@@ -71,14 +73,29 @@ namespace SEMTools4CD
             tiffList.ItemsSource = TiffItems;
             try
             {
-                //currentSettings = new semImageData();
+                //currentSettings = new semImageData
                 Settings = semImageData.FromString(Properties.Settings.Default.LastData);
             }
             catch
             {
                 Settings = new semImageData();
             }
+            try
+            {
+                _calibList = JsonConverter<ObservableCollection<CalibItem>>.Deserialize(Properties.Settings.Default.calibList);
+            }
+            catch { }
             currentSettings = Settings;
+
+            calibList.CollectionChanged += calibList_CollectionChanged;
+            calibListView.ItemsSource = calibList;
+
+        }
+
+        void calibList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Properties.Settings.Default.calibList = JsonConverter<ObservableCollection<CalibItem>>.Serialize(calibList);
+            Properties.Settings.Default.Save();
         }
 
         void CDWin_SelectionChange()
@@ -412,6 +429,26 @@ namespace SEMTools4CD
         {
             Settings = new semImageData();
             currentSettings = Settings;
+        }
+
+        private void ButtonAddToCalibList_Click(object sender, RoutedEventArgs e)
+        {
+            calibList.Add(new CalibItem("New Item", currentSettings.Calibration));
+        }
+
+        private void ButtonChooseCalib_Click(object sender, RoutedEventArgs e)
+        {
+            currentSettings.Calibration = ((CalibItem)calibListView.SelectedItem).Calibration;
+        }
+
+        private void ButtonDeleteCalib_Click(object sender, RoutedEventArgs e)
+        {
+            calibList.Remove((CalibItem)calibListView.SelectedItem);
+        }
+
+        private void ButtonShowList_Click(object sender, RoutedEventArgs e)
+        {
+            expanderList.Visibility = System.Windows.Visibility.Visible;
         }
     }
 

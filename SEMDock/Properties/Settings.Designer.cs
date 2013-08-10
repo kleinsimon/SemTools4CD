@@ -46,5 +46,17 @@ namespace SEMTools4CD.Properties {
                 this["LastDir"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string calibList {
+            get {
+                return ((string)(this["calibList"]));
+            }
+            set {
+                this["calibList"] = value;
+            }
+        }
     }
 }

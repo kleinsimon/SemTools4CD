@@ -15,3 +15,4 @@ C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.Properti
 C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.csproj.GenerateResource.Cache
 C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.dll
 C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.pdb
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\GeneratedInternalTypeHelper.g.cs

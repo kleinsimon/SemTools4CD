@@ -143,7 +143,7 @@ namespace SEMTools4CD
         public static semImageData FromString(string JsonData)
         {
             System.Runtime.Serialization.Json.DataContractJsonSerializer js = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(semImageData));
-            byte[] bA = Encoding.ASCII.GetBytes(JsonData);
+            byte[] bA = Encoding.UTF8.GetBytes(JsonData);
             Stream s = new MemoryStream(bA);
             s.Position = 0;
             semImageData tmp = (semImageData)js.ReadObject(s);

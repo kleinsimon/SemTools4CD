@@ -9,14 +9,14 @@
     <StackPanel Margin="0,0,0,0" VerticalAlignment="Top">
         <Label Content="SEM-Tools" Margin="5,2"/>
         <Expander Header="Create / Import" Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" IsExpanded="True" Margin="5">
-            <TabControl SelectedIndex="{Binding Path=Mode}" x:Name="tabMode">
+            <TabControl SelectedIndex="{Binding UpdateSourceTrigger=PropertyChanged, Path=Mode}" x:Name="tabMode">
                 <TabItem Header="By TIFF">
                     <DockPanel>
                         <StackPanel Height="30"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Orientation="Horizontal">
                             <Button Content="Browse TIFF" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="Button_Click_1"/>
                             <Button Content="Clear" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="Button_Click_2"/>
                         </StackPanel>
-                        <ListView x:Name="tiffList" VerticalContentAlignment="Top" DockPanel.Dock="Top" AllowDrop="True" MinHeight="100" MaxHeight="300" DragEnter="ListView_DragEnter_1" Drop="tiffList_Drop">
+                        <ListView x:Name="tiffList" VerticalContentAlignment="Top" DockPanel.Dock="Top" AllowDrop="True" MinHeight="100" MaxHeight="300" DragEnter="ListView_DragEnter_1" Drop="tiffList_Drop" ToolTip="Drop TIFF-Images taken with LEO SEM for automatic calibration">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn DisplayMemberBinding="{Binding filename}" Header="Filename" Width="150"/>
@@ -29,32 +29,32 @@
                 <TabItem Header="By Calibration">
                     <Grid Background="#FFE5E5E5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100*"/>
-                            <ColumnDefinition Width="159*"/>
+                            <ColumnDefinition Width="125"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,0,0" Grid.Column="0">
-                            <Label Height="26" Content="Factor [µm/px]" VerticalAlignment="Top" Margin="5,2"/>
+                            <Label Height="26" Content="Factor [µm/px]" VerticalAlignment="Top" Margin="5,2" ToolTip="Calibration factor to use for creating micron bar"/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,0" Grid.Column="1">
-                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=Calibration}" VerticalAlignment="Top" Margin="5,2"/>
-                            <Button Content="Measure" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="5,2"/>
-                            <Button Content="Load / Store" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="5,2"/>
+                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=Calibration}" VerticalAlignment="Top" Margin="5,2" ToolTip="Calibration factor to use for creating micron bar"/>
+                            <Button Content="Measure" HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Margin="5,2" ToolTip="Not yet implemented"/>
+                            <Button Content="List" HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Margin="5,2" ToolTip="Not yet implemented"/>
                         </StackPanel>
                     </Grid>
                 </TabItem>
                 <TabItem Header="By Length">
                     <Grid Background="#FFE5E5E5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100*"/>
-                            <ColumnDefinition Width="159*"/>
+                            <ColumnDefinition Width="125"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,0,0" Grid.Column="0">
-                            <Label Height="26" Content="Bar length [cm]" VerticalAlignment="Top" Margin="5,2"/>
-                            <Label Height="26" Content="Title" VerticalAlignment="Top" Margin="5,2"/>
+                            <Label Height="26" Content="Bar length [cm]" VerticalAlignment="Top" Margin="5,2" ToolTip="Fixed length of micron bar"/>
+                            <Label Height="26" Content="Title" VerticalAlignment="Top" Margin="5,2" ToolTip="Fixed title of micron bar"/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,0" Grid.Column="1">
-                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BarLength}" VerticalAlignment="Top" Margin="5,2"/>
-                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BarText}" VerticalAlignment="Top" Margin="5,2"/>
+                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=BarLength}" VerticalAlignment="Top" Margin="5,2" ToolTip="Fixed length of micron bar"/>
+                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=BarText}" VerticalAlignment="Top" Margin="5,2" ToolTip="Fixed title of micron bar"/>
                         </StackPanel>
                     </Grid>
                 </TabItem>
@@ -66,42 +66,42 @@
                 <TabItem Header="Dimensions">
                     <Grid Background="#FFE5E5E5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100*"/>
-                            <ColumnDefinition Width="159*"/>
+                            <ColumnDefinition Width="125"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,0,0" Grid.Column="0">
-                            <Label Height="26" Content="Width [cm]" VerticalAlignment="Top" Margin="5,2"/>
+                            <Label Height="26" Content="Width [cm]" VerticalAlignment="Top" Margin="5,2" ToolTip="Default for publications 11cm"/>
                             <Label Height="26" Content="Height [cm]" VerticalAlignment="Top" Margin="5,2"/>
-                            <Label Height="26" Content="Bar [pt]" VerticalAlignment="Top" Margin="5,2"/>
-                            <Label Height="26" Content="Border [pt]" VerticalAlignment="Top" Margin="5,2"/>
+                            <Label Height="26" Content="Bar line [pt]" VerticalAlignment="Top" Margin="5,2" ToolTip="Default 1.5 pt"/>
+                            <Label Height="26" Content="Border line [pt]" VerticalAlignment="Top" Margin="5,2" ToolTip="Default 1.5 pt"/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,0" Grid.Column="1">
-                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=Width,Mode=TwoWay,UpdateSourceTrigger=LostFocus}" VerticalAlignment="Top" Margin="5,2"/>
-                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=Height}" VerticalAlignment="Top" Margin="5,2"/>
-                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BarWidth}" VerticalAlignment="Top" Margin="5,2"/>
-                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BorderWidth}" VerticalAlignment="Top" Margin="5,2"/>
+                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=Width}" VerticalAlignment="Top" Margin="5,2" ToolTip="Default for publications 11cm"/>
+                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=Height}" VerticalAlignment="Top" Margin="5,2"/>
+                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=BarWidth}" VerticalAlignment="Top" Margin="5,2" ToolTip="Default 1.5pt"/>
+                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=BorderWidth}" VerticalAlignment="Top" Margin="5,2" ToolTip="Default 1.5pt"/>
                         </StackPanel>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Annotations">
                     <Grid Background="#FFE5E5E5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100*"/>
-                            <ColumnDefinition Width="159*"/>
+                            <ColumnDefinition Width="125"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,0,0" Grid.Column="0">
-                            <Label Height="26" Content="Upper-Left" VerticalAlignment="Top" Margin="5,2"/>
-                            <Label Height="26" Content="Upper-Right" VerticalAlignment="Top" Margin="5,2"/>
-                            <Label Height="26" Content="Lower-Left" VerticalAlignment="Top" Margin="5,2"/>
-                            <Label Height="26" Content="Font-Size [pt]" VerticalAlignment="Top" Margin="5,2"/>
+                            <Label Height="26" Content="Upper-Left" VerticalAlignment="Top" Margin="5,2" ToolTip="Annotation in the upper-left corner"/>
+                            <Label Height="26" Content="Upper-Right" VerticalAlignment="Top" Margin="5,2" ToolTip="Annotation in the upper-right corner"/>
+                            <Label Height="26" Content="Lower-Left" VerticalAlignment="Top" Margin="5,2" ToolTip="Annotation in the lower-left corner"/>
+                            <Label Height="26" Content="Font-Size [pt]" VerticalAlignment="Top" Margin="5,2" ToolTip="Default 10pt"/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,0" Grid.Column="1">
-                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=ULtext}" VerticalAlignment="Top" Margin="5,2"/>
-                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=URtext}" VerticalAlignment="Top" Margin="5,2"/>
-                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BLtext}" VerticalAlignment="Top" Margin="5,2"/>
+                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=ULtext}" VerticalAlignment="Top" Margin="5,2" ToolTip="Annotation in the upper-left corner"/>
+                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=URtext}" VerticalAlignment="Top" Margin="5,2" ToolTip="Annotation in the upper-right corner"/>
+                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=BLtext}" VerticalAlignment="Top" Margin="5,2" ToolTip="Annotation in the lower-left corner"/>
                             <StackPanel Height="26" Margin="5,2" Orientation="Horizontal">
-                                <TextBox TextWrapping="Wrap" Text="{Binding Path=FontSize}" Margin="0,0,5,0" Width="80"/>
-                                <CheckBox IsChecked="{Binding Path=TextBold}" Content="B" BorderThickness="1" Margin="5" FontWeight="Bold"/>
+                                <TextBox TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=FontSize}" Margin="0,0,5,0" Width="40" ToolTip="Default 10pt"/>
+                                <CheckBox IsChecked="{Binding UpdateSourceTrigger=PropertyChanged, Path=TextBold}" Content="B" BorderThickness="1" Margin="2,5" FontWeight="Bold" ToolTip="Default off"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -110,17 +110,17 @@
                     <DockPanel>
                         <Grid Background="#FFE5E5E5">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100*"/>
-                                <ColumnDefinition Width="159*"/>
+                                <ColumnDefinition Width="125"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel Margin="0,0,0,0" Grid.Column="0">
-                                <Label Height="26" Content="Min [cm]" VerticalAlignment="Top" Margin="5,2"/>
-                                <Label Height="26" Content="Max [cm]" VerticalAlignment="Top" Margin="5,2"/>
+                                <Label Height="26" Content="Min Width [cm]" VerticalAlignment="Top" Margin="5,2" ToolTip="Minimum wdith of micron bar (when using calibration factor)"/>
+                                <Label Height="26" Content="Max Width [cm]" VerticalAlignment="Top" Margin="5,2" ToolTip="Maximum wdith of micron bar (when using calibration factor)"/>
 
                             </StackPanel>
                             <StackPanel Margin="0,0,0,0" Grid.Column="1">
-                                <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BarMinWidth}" VerticalAlignment="Top" Margin="5,2"/>
-                                <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BarMaxWidth}" VerticalAlignment="Top" Margin="5,2"/>
+                                <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=BarMinWidth}" VerticalAlignment="Top" Margin="5,2" ToolTip="Minimum wdith of micron bar (when using calibration factor)"/>
+                                <TextBox Height="26" TextWrapping="Wrap" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=BarMaxWidth}" VerticalAlignment="Top" Margin="5,2" ToolTip="Maximum wdith of micron bar (when using calibration factor)"/>
 
                             </StackPanel>
                         </Grid>
@@ -129,8 +129,9 @@
             </TabControl>
         </Expander>
         <StackPanel Height="30" HorizontalAlignment="Center" Orientation="Horizontal" Margin="0">
-            <Button x:Name="CreateButton" Content="Create" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="CreateButton_Click"/>
-            <Button x:Name="SaveButton" Content="Save Settings" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="SaveButton_Click"/>
+            <Button x:Name="CreateButton" Content="Create/Save" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="CreateButton_Click" IsDefault="True"/>
+            <Button x:Name="SaveButton" Content="Save Default" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="SaveButton_Click"/>
+            <Button x:Name="SaveButton_Copy" Content="Reset" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="SaveButton_Copy_Click"/>
         </StackPanel>
     </StackPanel>
 

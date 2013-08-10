@@ -35,7 +35,16 @@ namespace SEMTools4CD
     {
         CorelDRAW.Application CDWin;
         List<semImage> editShapes = new List<semImage>();
-        semImageData currentSettings;
+        semImageData _currentSettings;
+        semImageData currentSettings
+        {
+            get { return _currentSettings; }
+            set
+            {
+                _currentSettings = value;
+                this.DataContext = _currentSettings;
+            }
+        }
         semImageData Settings;
         bool locked = false;
         string[] allowedExt = { ".tiff", ".tif" };
@@ -70,7 +79,6 @@ namespace SEMTools4CD
                 Settings = new semImageData();
             }
             currentSettings = Settings;
-            this.DataContext = currentSettings;
         }
 
         void CDWin_SelectionChange()
@@ -116,6 +124,7 @@ namespace SEMTools4CD
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
+            dlg.InitialDirectory = Properties.Settings.Default.LastDir;
             dlg.DefaultExt = ".tif";
             dlg.Filter = "Tiff-File|*.tif;*.tiff";
             dlg.Multiselect = true;
@@ -127,6 +136,8 @@ namespace SEMTools4CD
                 {
                     _TiffItems.Add(new TIFFitem(file));
                 }
+                Properties.Settings.Default.LastDir = Path.GetDirectoryName(dlg.FileName);
+                Properties.Settings.Default.Save();
             }
         }
 
@@ -138,6 +149,11 @@ namespace SEMTools4CD
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
             locked = true;
+            if (CDWin == null || CDWin.ActiveDocument == null)
+            {
+                MessageBox.Show("No open document");
+                return;
+            }
             try
             {
                 if (tabMode.SelectedIndex == 0 && _TiffItems.Count > 0)
@@ -216,6 +232,7 @@ namespace SEMTools4CD
             double LmarginH, LmarginV, TmarginH, TmarginV, Theight;
             double Lwidth, Wwidth, Wheight, Lheight;
             double Left, Bottom, Width, Height;
+            double oldCenterX, oldCenterY;
             double cimgratio;
             bool NoBar = false;
             Shape s = curShape.imgShape;
@@ -227,6 +244,8 @@ namespace SEMTools4CD
             Black.CMYKAssign(0, 0, 0, 100);
             White.CMYKAssign(0, 0, 0, 0);
 
+            oldCenterX = s.CenterX;
+            oldCenterY = s.CenterY;
 
             Left = s.LeftX;
             Bottom = s.BottomY;
@@ -320,7 +339,7 @@ namespace SEMTools4CD
             if (d.ULtext.Trim() != "")
             {
                 Shape back, text;
-                text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + Height - Theight - TmarginV, d.ULtext, Alignment: CorelDRAW.cdrAlignment.cdrRightAlignment, Size: d.FontSize);
+                text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + Height - Theight - TmarginV, d.ULtext, Alignment: CorelDRAW.cdrAlignment.cdrLeftAlignment, Size: d.FontSize);
                 back = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom + Height - Theight - 2 * TmarginV, text.SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
                 back.Fill.ApplyUniformFill(White);
                 back.Outline.Width = 0;
@@ -334,7 +353,7 @@ namespace SEMTools4CD
             {
                 Shape back, text;
                 text = CDWin.ActiveLayer.CreateArtisticText(Left + Width - TmarginH, Bottom + Height - Theight - TmarginV, d.URtext, Alignment: CorelDRAW.cdrAlignment.cdrRightAlignment, Size: d.FontSize);
-                back = CDWin.ActiveLayer.CreateRectangle2(Left + Width - TextShapes[TextShapes.Count].SizeWidth - 2 * TmarginH, Bottom + Height - Theight - 2 * TmarginV, TextShapes[TextShapes.Count].SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
+                back = CDWin.ActiveLayer.CreateRectangle2(Left + Width - text.SizeWidth - 2 * TmarginH, Bottom + Height - Theight - 2 * TmarginV, TextShapes[TextShapes.Count].SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
                 back.Fill.ApplyUniformFill(White);
                 back.Outline.Width = 0;
                 back.OrderBackOf(text);
@@ -346,8 +365,8 @@ namespace SEMTools4CD
             if (d.BLtext != "")
             {
                 Shape back, text;
-                text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + TmarginV, d.BLtext, Alignment: CorelDRAW.cdrAlignment.cdrRightAlignment, Size: d.FontSize);
-                back = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom, TextShapes[TextShapes.Count].SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
+                text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + TmarginV, d.BLtext, Alignment: CorelDRAW.cdrAlignment.cdrLeftAlignment, Size: d.FontSize);
+                back = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom, text.SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
                 back.Fill.ApplyUniformFill(White);
                 back.Outline.Width = 0;
                 back.OrderBackOf(text);
@@ -361,6 +380,9 @@ namespace SEMTools4CD
             Brect.Properties["semItem", 0] = true;
             Brect.Properties["semItem", 1] = curShape.imgData.ToString();
             if (d.filename != "") Brect.Name = d.filename;
+
+            Brect.CenterX = oldCenterX;
+            Brect.CenterY = oldCenterY;
 
             CDWin.ActiveWindow.Refresh();
             CDWin.Application.Refresh();
@@ -384,6 +406,12 @@ namespace SEMTools4CD
             Properties.Settings.Default.LastData = currentSettings.ToString();
 
             Properties.Settings.Default.Save();
+        }
+
+        private void SaveButton_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            Settings = new semImageData();
+            currentSettings = Settings;
         }
     }
 

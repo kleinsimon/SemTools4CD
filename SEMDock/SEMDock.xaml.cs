@@ -47,6 +47,7 @@ namespace SEMTools4CD
         }
         semImageData Settings;
         bool locked = false;
+        CalibMeasure CalMes;
         string[] allowedExt = { ".tiff", ".tif" };
         ObservableCollection<TIFFitem> _TiffItems = new ObservableCollection<TIFFitem>();
         public ObservableCollection<TIFFitem> TiffItems { get { return _TiffItems; } }
@@ -70,10 +71,11 @@ namespace SEMTools4CD
 
         void initWin()
         {
+            this.Language = System.Windows.Markup.XmlLanguage.GetLanguage(
+                        System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag);
             tiffList.ItemsSource = TiffItems;
             try
             {
-                //currentSettings = new semImageData
                 Settings = semImageData.FromString(Properties.Settings.Default.LastData);
             }
             catch
@@ -137,7 +139,7 @@ namespace SEMTools4CD
             }
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void ButtonBrowseTiffFiles_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
 
@@ -158,7 +160,7 @@ namespace SEMTools4CD
             }
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void ButtonClearTiffList_Click(object sender, RoutedEventArgs e)
         {
             _TiffItems.Clear();
         }
@@ -225,14 +227,23 @@ namespace SEMTools4CD
 
                 CDWin.ActiveDocument.BeginCommandGroup("semItem");
                 CDWin.Application.Optimization = true;
-
-                foreach (semImage img in editShapes)
+                try
                 {
-                    decorateShape(img);
+                    foreach (semImage img in editShapes)
+                    {
+                        decorateShape(img);
+                    }
+                    editShapes.Clear();
+                    CDWin.ActiveDocument.EndCommandGroup();
+                    CDWin.Application.Optimization = false;
                 }
-                editShapes.Clear();
-                CDWin.ActiveDocument.EndCommandGroup();
-                CDWin.Application.Optimization = false;
+                catch
+                {
+                    editShapes.Clear();
+                    CDWin.ActiveDocument.EndCommandGroup();
+                    CDWin.Application.Optimization = false;
+                }
+
             }
             catch (Exception ex)
             {
@@ -449,6 +460,85 @@ namespace SEMTools4CD
         private void ButtonShowList_Click(object sender, RoutedEventArgs e)
         {
             expanderList.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private void ButtonStartMeasure_Click(object sender, RoutedEventArgs e)
+        {
+            if (CreateMeasureRect())
+            {
+                ButStartMes.Visibility = System.Windows.Visibility.Collapsed;
+                ButStopMes.Visibility = System.Windows.Visibility.Visible;
+            }
+
+        }
+
+        bool CreateMeasureRect()
+        {
+            if (CDWin == null || CDWin.ActiveSelection == null || CDWin.ActiveSelection.Shapes.Count == 0 || CDWin.ActiveSelection.Shapes[1].Type != CorelDRAW.cdrShapeType.cdrBitmapShape)
+            {
+                MessageBox.Show("No Image selected. Select an Image first");
+                return false;
+            }
+            CalMes = new CalibMeasure();
+
+            CalMes.img = CDWin.ActiveSelection.Shapes[1];
+            CalMes.mesRect = CDWin.ActiveLayer.CreateRectangle2(
+                CDWin.ActiveWindow.ActiveView.OriginX,
+                CDWin.ActiveWindow.ActiveView.OriginY,
+                CDWin.ConvertUnits(3d, CorelDRAW.cdrUnit.cdrCentimeter, CDWin.ActiveDocument.Unit),
+                CDWin.ConvertUnits(1d, CorelDRAW.cdrUnit.cdrCentimeter, CDWin.ActiveDocument.Unit)
+                );
+
+            Color back = new Color();
+            back.CMYKAssign(0, 60, 100, 0);
+
+            CalMes.mesRect.Selected = true;
+            CalMes.mesRect.Outline.Width = 0;
+            CalMes.mesRect.Fill.ApplyUniformFill(back);
+            CalMes.mesRect.Transparency.ApplyUniformTransparency(0);
+            CalMes.mesRect.Transparency.MergeMode = CorelDRAW.cdrMergeMode.cdrMergeXOR;
+
+            return true;
+        }
+
+        private void StopMesClick(object sender, RoutedEventArgs e)
+        {
+            double rw = 0d;
+            CalMes.vertical = (CalibDirection.SelectedIndex == 0) ? false : true;
+            if (double.TryParse(CalibRealWidth.Text, out rw))
+            {
+                CalMes.realWidth = rw;
+                CalibMesWidth.Text = CDWin.ConvertUnits((CalMes.vertical) ? CalMes.mesRect.SizeHeight : CalMes.mesRect.SizeWidth, CDWin.ActiveDocument.Unit, CorelDRAW.cdrUnit.cdrCentimeter).ToString();
+                CalibMesFactor.Text = CalMes.calibrationFactor.ToString();
+
+                CalMes.Delete();
+
+                ButStartMes.Visibility = System.Windows.Visibility.Visible;
+                ButStopMes.Visibility = System.Windows.Visibility.Collapsed;
+                ButApplyMes.IsEnabled = true;
+            }
+            else
+            {
+                MessageBox.Show("Insert the real distance first");
+            }
+        }
+
+        private void MesApply_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                currentSettings.Calibration = double.Parse(CalibMesFactor.Text);
+                toggleCalib.IsChecked = false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void UserControl_DragEnter(object sender, DragEventArgs e)
+        {
+            currentSettings.Mode = 0;
         }
     }
 

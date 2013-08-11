@@ -5,21 +5,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:diagnostics="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              xmlns:local="clr-namespace:SEMTools4CD" x:Class="SEMTools4CD.SEMDock"
-             mc:Ignorable="d" d:DesignWidth="271" VerticalAlignment="Top">
+             mc:Ignorable="d" d:DesignWidth="271" VerticalAlignment="Top" DragEnter="UserControl_DragEnter" AllowDrop="True">
     <UserControl.Resources>
         <local:BooleanToVisibilityConverter x:Key="bvc" True="Visible" False="Collapsed" />
         <local:BooleanToVisibilityConverter x:Key="nbvc" True="Collapsed" False="Visible" />
         <local:InverseBooleanConverter x:Key="not"/>
+        <local:InvertVisibilityConverter x:Key="ivis"/>
     </UserControl.Resources>
     <StackPanel Margin="0,0,0,0" VerticalAlignment="Top">
         <Label Content="SEM-Tools" Margin="5,2"/>
-        <Expander Header="Create / Import" Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" IsExpanded="True" Margin="5">
+        <Expander x:Name="ExpanderMode" Header="Create / Import" Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" IsExpanded="True" Margin="5">
             <TabControl SelectedIndex="{Binding Path=Mode}" x:Name="tabMode">
                 <TabItem Header="By TIFF">
                     <DockPanel>
                         <StackPanel Height="30"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Orientation="Horizontal">
-                            <Button Content="Browse TIFF" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="Button_Click_1"/>
-                            <Button Content="Clear" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="Button_Click_2"/>
+                            <Button Content="Browse TIFF" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="ButtonBrowseTiffFiles_Click"/>
+                            <Button Content="Clear" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="ButtonClearTiffList_Click"/>
                         </StackPanel>
                         <ListView x:Name="tiffList" VerticalContentAlignment="Top" DockPanel.Dock="Top" AllowDrop="True" MinHeight="100" MaxHeight="300" DragEnter="ListView_DragEnter_1" Drop="tiffList_Drop" ToolTip="Drop TIFF-Images taken with LEO SEM for automatic calibration">
                             <ListView.View>
@@ -42,7 +43,7 @@
                         </StackPanel>
                         <StackPanel Margin="0,0,0,0" Grid.Column="1">
                             <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=Calibration}" VerticalAlignment="Top" Margin="5,2" ToolTip="Calibration factor to use for creating micron bar"/>
-                            <Button Content="Measure" HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Margin="5,2" ToolTip="Not yet implemented"/>
+                            <ToggleButton x:Name="toggleCalib" Content="Measure" HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Margin="5,2"/>
                             <ToggleButton x:Name="toggleList" Content="List" HorizontalAlignment="Center" VerticalAlignment="Top" Width="60" Margin="5,2"/>
                         </StackPanel>
                     </Grid>
@@ -89,7 +90,37 @@
                 </ListView>
             </DockPanel>
         </Expander>
-        <Expander Header="Properties" Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" IsExpanded="True" Margin="5">
+        <Expander Header="Measure Calibration" Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" IsExpanded="True" Margin="5" Visibility="{Binding IsChecked, ElementName=toggleCalib, Converter={StaticResource bvc}}">
+            <DockPanel>
+                <Grid DockPanel.Dock="Top" Background="#FFE5E5E5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="125"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,0,0" Grid.Column="0">
+                        <Label Height="26" Content="Direction" Margin="5,2"/>
+                        <Label Height="26" Content="Distance [µm]" Margin="5,2"/>
+                        <Label Height="26" Content="Measured [cm]" Margin="5,2"/>
+                        <Label Height="26" Content="Factor [µm/px]" Margin="5,2"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,0" Grid.Column="1">
+                        <ComboBox x:Name="CalibDirection" Height="24" Margin="5,1" HorizontalContentAlignment="Center">
+                            <ComboBoxItem Content="Horizontal" IsSelected="True"/>
+                            <ComboBoxItem Content="Vertical"/>
+                        </ComboBox>
+                        <TextBox x:Name="CalibRealWidth" Height="26" TextWrapping="Wrap" Text="" Margin="5,2"/>
+                        <TextBox x:Name="CalibMesWidth" Text="{Binding SizeWidth}" Height="26" TextWrapping="Wrap" Margin="5,2" IsHitTestVisible="False" IsReadOnly="True"/>
+                        <TextBox x:Name="CalibMesFactor" Text="{Binding SizeWidth}" Height="26" TextWrapping="Wrap" Margin="5,2" IsHitTestVisible="False" IsReadOnly="True"/>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Height="30"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button x:Name="ButStartMes" Content="Start Measuring" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="ButtonStartMeasure_Click"/>
+                    <Button x:Name="ButStopMes" Content="Stop Measuring" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="StopMesClick" Visibility="Collapsed"/>
+                    <Button x:Name="ButApplyMes" Content="Apply" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="MesApply_Click" IsEnabled="False"/>
+                </StackPanel>
+            </DockPanel>
+        </Expander>
+        <Expander Header="Properties" Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" IsExpanded="{Binding IsChecked, UpdateSourceTrigger=Explicit, ElementName=toggleList, Converter={StaticResource not}}" Margin="5">
             <TabControl>
                 <TabItem Header="Dimensions">
                     <Grid Background="#FFE5E5E5">

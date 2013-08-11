@@ -77,7 +77,7 @@ namespace SEMTools4CD
         }
     }
 
-    [Serializable,DataContract]
+    [Serializable, DataContract]
     public class semImageData : INotifyPropertyChanged
     {
         [DataMember(Name = "ULtext")]
@@ -178,6 +178,35 @@ namespace SEMTools4CD
         }
     }
 
+    public class CalibMeasure
+    {
+        public bool vertical { get; set; }
+        public double realWidth { get; set; }
+        public double imgResolution { get {
+            if (vertical)
+                return img.Bitmap.SizeHeight / img.SizeHeight; 
+            else
+                return img.Bitmap.SizeWidth / img.SizeWidth; 
+        } }
+        public double calibrationFactor
+        {
+            get
+            {
+                if (vertical)
+                    return realWidth / (mesRect.SizeHeight * imgResolution);
+                else
+                    return realWidth / (mesRect.SizeWidth * imgResolution);
+            }
+        }
+        public Shape mesRect { get; set; }
+        public Shape img { get; set; }
+
+        public void Delete()
+        {
+            mesRect.Delete();
+        }
+    }
+
     public class BooleanConverter<T> : IValueConverter
     {
         public BooleanConverter(T trueValue, T falseValue)
@@ -224,12 +253,71 @@ namespace SEMTools4CD
             System.Globalization.CultureInfo culture)
         {
             if (targetType != typeof(bool))
-                throw new InvalidOperationException("The target must be a boolean");
+                throw new InvalidOperationException("The target must be a boolean. Is " + targetType.ToString());
 
             return !(bool)value;
         }
 
         #endregion
+    }
+
+    [ValueConversion(typeof(bool?), typeof(bool))]
+    public class BooleanToNullableConverter : IValueConverter
+    {
+        #region IValueConverter Members
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (targetType != typeof(bool?))
+            {
+                throw new InvalidOperationException("The target must be a nullable boolean");
+            }
+            bool? b = (bool?)value;
+            return b.HasValue && b.Value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return value;
+        }
+
+        #endregion
+    }
+
+    public class ValueConverterGroup : List<IValueConverter>, IValueConverter
+    {
+        #region IValueConverter Members
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return this.Aggregate(value, (current, converter) => converter.Convert(current, targetType, parameter, culture));
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+    }
+
+    public class InvertVisibilityConverter : IValueConverter
+    {
+
+        public Object Convert(Object value, Type targetType, Object parameter, CultureInfo culture)
+        {
+            if (targetType == typeof(Visibility))
+            {
+                Visibility vis = (Visibility)value;
+                return vis == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+            }
+            throw new InvalidOperationException("Converter can only convert to value of type Visibility.");
+        }
+
+        public Object ConvertBack(Object value, Type targetType, Object parameter, CultureInfo culture)
+        {
+            throw new Exception("Invalid call - one way only");
+        }
     }
 
     public class semImage
@@ -253,7 +341,7 @@ namespace SEMTools4CD
                 cdrUnit.cdrCentimeter,
                 CDWin.ActiveDocument.Unit);
 
-            double minVal = imgData.BarMinWidth* OffsetResolution * imgData.Calibration;
+            double minVal = imgData.BarMinWidth * OffsetResolution * imgData.Calibration;
             double pot = Math.Pow(10d, Math.Floor(Math.Log10(minVal)));
 
             for (int i = 1; i <= 19; i++)
@@ -266,7 +354,7 @@ namespace SEMTools4CD
                 if (l >= imgData.BarMinWidth && l <= imgData.BarMaxWidth)
                 {
                     imgData.BarLength = l;
-                    imgData.BarText = getScaleText( z);
+                    imgData.BarText = getScaleText(z);
                     return;
                 }
                 else
@@ -326,24 +414,5 @@ namespace SEMTools4CD
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
-    }
-
-    enum PropID
-    {
-        calibration = 1,
-        TextOL = 2,
-        TextOR = 3,
-        TextUL = 4,
-        Length = 5,
-        Text = 6,
-        lineW = 7,
-        lineBW = 8,
-        TextBold = 9,
-        TextSize = 10,
-        width = 11,
-        height = 12,
-        Mode = 13,
-        isBalkenGroup = 14,
-        filename = 15,
     }
 }

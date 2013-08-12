@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 //using System.Windows.Documents;
-//using System.Windows.Input;
+using System.Windows.Input;
 //using System.Windows.Media;
 //using System.Windows.Media.Imaging;
 //using System.Windows.Navigation;
@@ -52,8 +53,7 @@ namespace SEMTools4CD
         ObservableCollection<TIFFitem> _TiffItems = new ObservableCollection<TIFFitem>();
         public ObservableCollection<TIFFitem> TiffItems { get { return _TiffItems; } }
 
-        ObservableCollection<CalibItem> _calibList = new ObservableCollection<CalibItem>();
-        public ObservableCollection<CalibItem> calibList { get { return _calibList; } }
+        public BindingList<CalibItem> calibList = new BindingList<CalibItem>();
 
         public SEMDock()
         {
@@ -84,19 +84,21 @@ namespace SEMTools4CD
             }
             try
             {
-                _calibList = JsonConverter<ObservableCollection<CalibItem>>.Deserialize(Properties.Settings.Default.calibList);
+                calibList = new BindingList<CalibItem>(JsonConverter<List<CalibItem>>.Deserialize(Properties.Settings.Default.calibList));
+                calibList.ListChanged += calibList_ListChanged;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
             currentSettings = Settings;
 
-            calibList.CollectionChanged += calibList_CollectionChanged;
             calibListView.ItemsSource = calibList;
-
         }
 
-        void calibList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        void calibList_ListChanged(object sender, ListChangedEventArgs e)
         {
-            Properties.Settings.Default.calibList = JsonConverter<ObservableCollection<CalibItem>>.Serialize(calibList);
+            Properties.Settings.Default.calibList = JsonConverter<List<CalibItem>>.Serialize(calibList.ToList());
             Properties.Settings.Default.Save();
         }
 
@@ -449,12 +451,16 @@ namespace SEMTools4CD
 
         private void ButtonChooseCalib_Click(object sender, RoutedEventArgs e)
         {
-            currentSettings.Calibration = ((CalibItem)calibListView.SelectedItem).Calibration;
+            CalibItem item = calibListView.SelectedItem as CalibItem;
+            if (item!=null) 
+                currentSettings.Calibration = item.Calibration;
         }
 
         private void ButtonDeleteCalib_Click(object sender, RoutedEventArgs e)
         {
-            calibList.Remove((CalibItem)calibListView.SelectedItem);
+            CalibItem item = calibListView.SelectedItem as CalibItem;
+            if (item != null)
+                calibList.Remove(item);
         }
 
         private void ButtonShowList_Click(object sender, RoutedEventArgs e)
@@ -539,6 +545,36 @@ namespace SEMTools4CD
         private void UserControl_DragEnter(object sender, DragEventArgs e)
         {
             currentSettings.Mode = 0;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(calibList[0].Name);
+        }
+
+        private void calibListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            CalibItem item = ((FrameworkElement)e.OriginalSource).DataContext as CalibItem;
+            if (item != null)
+            {
+                changeItemName.Visibility = System.Windows.Visibility.Visible;
+                TextListViewName.DataContext = item;
+                e.Handled =true;
+            }
+        }
+
+        private void TextListViewName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                try
+                {
+                    TextListViewName.GetBindingExpression(TextBox.TextProperty).UpdateSource();
+                    changeItemName.Visibility = System.Windows.Visibility.Collapsed;
+                }
+                catch { }
+                e.Handled = true;
+            }
         }
     }
 

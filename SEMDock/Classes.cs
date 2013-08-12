@@ -390,7 +390,7 @@ namespace SEMTools4CD
         }
     }
 
-    [Serializable, DataContract]
+    [DataContract]
     public class CalibItem : INotifyPropertyChanged
     {
         [DataMember(Name = "Name")]
@@ -398,8 +398,8 @@ namespace SEMTools4CD
         [DataMember(Name = "Calibration")]
         private double _calibration = 1d;
 
-        public string Name { get { return _name; } set { _name = value; NotifyPropertyChanged(""); } }
-        public double Calibration { get { return _calibration; } set { _calibration = value; NotifyPropertyChanged(""); } }
+        public string Name { get { return _name; } set { _name = value; NotifyPropertyChanged("Name"); } }
+        public double Calibration { get { return _calibration; } set { _calibration = value; NotifyPropertyChanged("Calib"); } }
 
         public CalibItem(string name, double calib)
         {

@@ -44,3 +44,8 @@ C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\bin\Debug\SEMTools4CD.pdb
 C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\Interop.CorelDRAW.dll
 C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\Interop.VGCore.dll
 C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD_MarkupCompile.lref
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\bin\Debug\SemTools_starter.gms
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\sk\SkyDrive\Dev\SEMTools4CD\SEMDock\bin\Debug\SemTools_starter.gms
+C:\Users\sk\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\sk\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD_MarkupCompile.lref

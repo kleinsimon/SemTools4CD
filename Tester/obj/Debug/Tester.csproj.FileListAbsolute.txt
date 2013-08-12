@@ -28,3 +28,5 @@ C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Debug\Tester_MarkupCompile.ca
 C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Debug\Tester.g.resources
 C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Debug\Tester.Properties.Resources.resources
 C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\obj\Debug\Tester.csproj.GenerateResource.Cache
+C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\Tester\bin\Debug\SemTools_starter.gms
+C:\Users\sk\SkyDrive\Dev\SEMTools4CD\Tester\bin\Debug\SemTools_starter.gms

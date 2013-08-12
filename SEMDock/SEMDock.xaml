@@ -74,16 +74,14 @@
                     <Button Content="Add Current" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="ButtonAddToCalibList_Click"/>
                     <Button Content="Delete" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="ButtonDeleteCalib_Click"/>
                 </StackPanel>
-                <ListView x:Name="calibListView" VerticalContentAlignment="Top" DockPanel.Dock="Top" MinHeight="100" MaxHeight="300" IsManipulationEnabled="True" >
+                <StackPanel x:Name="changeItemName" Height="30"  DockPanel.Dock="Top" HorizontalAlignment="Center" Orientation="Horizontal" Visibility="Collapsed">
+                    <Label Height="26" Content="Name" VerticalAlignment="Top" Margin="5,2" ToolTip="Change name of the Element"/>
+                    <TextBox x:Name="TextListViewName" Text="{Binding Path=Name, UpdateSourceTrigger=Explicit}" Height="26" TextWrapping="Wrap" Width="100" VerticalAlignment="Top" Margin="5,2" ToolTip="Change name of the Element" KeyDown="TextListViewName_KeyDown"/>
+                </StackPanel>
+                <ListView x:Name="calibListView" VerticalContentAlignment="Top" DockPanel.Dock="Top" MinHeight="100" MaxHeight="300" IsManipulationEnabled="True" MouseDoubleClick="calibListView_MouseDoubleClick">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Description" Width="150">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBox Text="{Binding Name}" Width="150"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Name"/>
                             <GridViewColumn DisplayMemberBinding="{Binding Calibration}" Header="Factor"/>
                         </GridView>
                     </ListView.View>
@@ -109,8 +107,8 @@
                             <ComboBoxItem Content="Vertical"/>
                         </ComboBox>
                         <TextBox x:Name="CalibRealWidth" Height="26" TextWrapping="Wrap" Text="" Margin="5,2"/>
-                        <TextBox x:Name="CalibMesWidth" Text="{Binding SizeWidth}" Height="26" TextWrapping="Wrap" Margin="5,2" IsHitTestVisible="False" IsReadOnly="True"/>
-                        <TextBox x:Name="CalibMesFactor" Text="{Binding SizeWidth}" Height="26" TextWrapping="Wrap" Margin="5,2" IsHitTestVisible="False" IsReadOnly="True"/>
+                        <TextBox x:Name="CalibMesWidth" Height="26" TextWrapping="Wrap" Margin="5,2" IsHitTestVisible="False" IsReadOnly="True"/>
+                        <TextBox x:Name="CalibMesFactor" Height="26" TextWrapping="Wrap" Margin="5,2" IsHitTestVisible="False" IsReadOnly="True"/>
                     </StackPanel>
                 </Grid>
                 <StackPanel Height="30"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Orientation="Horizontal">
@@ -180,7 +178,6 @@
                             <StackPanel Margin="0,0,0,0" Grid.Column="1">
                                 <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BarMinWidth}" VerticalAlignment="Top" Margin="5,2" ToolTip="Minimum wdith of micron bar (when using calibration factor)"/>
                                 <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BarMaxWidth}" VerticalAlignment="Top" Margin="5,2" ToolTip="Maximum wdith of micron bar (when using calibration factor)"/>
-
                             </StackPanel>
                         </Grid>
                     </DockPanel>
@@ -193,5 +190,4 @@
             <Button x:Name="SaveButton_Copy" Content="Reset" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="SaveButton_Copy_Click"/>
         </StackPanel>
     </StackPanel>
-
 </UserControl>

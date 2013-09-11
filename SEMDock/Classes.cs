@@ -382,8 +382,8 @@ namespace SEMTools4CD
             else if (scale >= 1000000d) res = (scale / 1000000d).ToString() + " m";
             else if (scale >= 10000d) res = (scale / 10000d).ToString() + " cm";
             else if (scale >= 1000d) res = (scale / 1000d).ToString() + " mm";
-            else if (scale <= 0.001d) res = (scale * 1000000d).ToString() + " pm";
-            else if (scale <= 1d) res = (scale * 1000d).ToString() + " nm";
+            else if (scale < 0.001d) res = (scale * 1000000d).ToString() + " pm";
+            else if (scale < 1d) res = (scale * 1000d).ToString() + " nm";
             else res = scale.ToString() + " µm";
 
             return res;

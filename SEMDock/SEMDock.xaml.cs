@@ -84,12 +84,16 @@ namespace SEMTools4CD
             }
             try
             {
-                calibList = new BindingList<CalibItem>(JsonConverter<List<CalibItem>>.Deserialize(Properties.Settings.Default.calibList));
+                calibList = new BindingList<CalibItem>();
                 calibList.ListChanged += calibList_ListChanged;
+                foreach (CalibItem it in JsonConverter<List<CalibItem>>.Deserialize(Properties.Settings.Default.calibList))
+                {
+                    calibList.Add(it);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                //MessageBox.Show(ex.Message);
             }
             currentSettings = Settings;
 

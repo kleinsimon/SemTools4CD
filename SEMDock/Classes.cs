@@ -112,6 +112,8 @@ namespace SEMTools4CD
         private float _BarMinWidth = 3f;
         [DataMember(Name = "BarMaxWidth")]
         private float _BarMaxWidth = 5f;
+        [DataMember(Name = "ValInBar")]
+        private bool? _ValInBar = false;
 
         public string ULtext { get { return _ULtext; } set { _ULtext = value; NotifyPropertyChanged(""); } }
         public string URtext { get { return _URtext; } set { _URtext = value; NotifyPropertyChanged(""); } }
@@ -129,6 +131,7 @@ namespace SEMTools4CD
         public bool? TextBold { get { return _TextBold; } set { _TextBold = value; NotifyPropertyChanged(""); } }
         public float BarMinWidth { get { return _BarMinWidth; } set { _BarMinWidth = value; NotifyPropertyChanged(""); } }
         public float BarMaxWidth { get { return _BarMaxWidth; } set { _BarMaxWidth = value; NotifyPropertyChanged(""); } }
+        public bool? ValInBar { get { return _ValInBar; } set { _ValInBar = value; NotifyPropertyChanged(""); } }
 
 
         public override string ToString()
@@ -382,8 +385,8 @@ namespace SEMTools4CD
             else if (scale >= 1000000d) res = (scale / 1000000d).ToString() + " m";
             else if (scale >= 10000d) res = (scale / 10000d).ToString() + " cm";
             else if (scale >= 1000d) res = (scale / 1000d).ToString() + " mm";
-            else if (scale <= 0.001d) res = (scale * 1000000d).ToString() + " pm";
-            else if (scale <= 1d) res = (scale * 1000d).ToString() + " nm";
+            else if (scale < 0.001d) res = (scale * 1000000d).ToString() + " pm";
+            else if (scale < 1d) res = (scale * 1000d).ToString() + " nm";
             else res = scale.ToString() + " µm";
 
             return res;

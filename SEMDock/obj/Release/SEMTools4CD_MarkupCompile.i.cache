@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\sk\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Release\
+D:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Release\
 SEMTools4CD
 none
 false
@@ -16,5 +16,5 @@ TRACE
 151144726224
 SEMDock.xaml;
 
-True
+False
 

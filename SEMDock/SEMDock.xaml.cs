@@ -8,12 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-//using System.Windows.Documents;
 using System.Windows.Input;
-//using System.Windows.Media;
-//using System.Windows.Media.Imaging;
-//using System.Windows.Navigation;
-//using System.Windows.Shapes;
 using System.Threading;
 using System.Diagnostics;
 using System.IO;
@@ -84,12 +79,16 @@ namespace SEMTools4CD
             }
             try
             {
-                calibList = new BindingList<CalibItem>(JsonConverter<List<CalibItem>>.Deserialize(Properties.Settings.Default.calibList));
+                calibList = new BindingList<CalibItem>();
                 calibList.ListChanged += calibList_ListChanged;
+                foreach (CalibItem it in JsonConverter<List<CalibItem>>.Deserialize(Properties.Settings.Default.calibList))
+                {
+                    calibList.Add(it);
+                }
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.Message);
+                //MessageBox.Show(ex.Message);
             }
             currentSettings = Settings;
 
@@ -169,14 +168,14 @@ namespace SEMTools4CD
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
-            locked = true;
-            if (CDWin == null || CDWin.ActiveDocument == null)
-            {
-                MessageBox.Show("No open document");
-                return;
-            }
             try
             {
+                locked = true;
+                if (CDWin == null || CDWin.ActiveDocument == null)
+                {
+                    MessageBox.Show("No open document");
+                    return;
+                }
                 if (tabMode.SelectedIndex == 0 && _TiffItems.Count > 0)
                 {
                     editShapes.Clear();
@@ -345,9 +344,14 @@ namespace SEMTools4CD
             s.Name = "semItemContent";
             s.AddToPowerClip(Brect, CorelDRAW.cdrTriState.cdrFalse);
 
+            if (d.ValInBar == true)
+            {
+                Wheight = Lheight + LmarginV;
+            }
+
             if (!NoBar)
             {
-                Lrect = CDWin.ActiveLayer.CreateRectangle2(Left + Width - Wwidth, Bottom, Wwidth, Wheight + Theight);
+                Lrect = CDWin.ActiveLayer.CreateRectangle2(Left + Width - Wwidth, Bottom, Wwidth, Wheight + ((d.ValInBar!=true) ? Theight : 0));
                 Wline = CDWin.ActiveLayer.CreateLineSegment(Left + Width - LmarginH - Lwidth, Bottom + Wheight / 2, Left + Width - LmarginH, Bottom + Wheight / 2);
                 Ttext = CDWin.ActiveLayer.CreateArtisticText(Left + Width - Wwidth / 2, Bottom + Wheight / 2 + TmarginV, d.BarText, Alignment: CorelDRAW.cdrAlignment.cdrCenterAlignment, Size: d.FontSize);
 
@@ -359,6 +363,21 @@ namespace SEMTools4CD
                 Wline.Outline.Color = Black;
                 Wline.Outline.EndArrow = CDWin.ArrowHeads[59];
                 Wline.Outline.StartArrow = CDWin.ArrowHeads[59];
+
+                if (d.ValInBar == true)
+                {
+                    Shape Trect;
+                    Trect = CDWin.ActiveLayer.CreateRectangle2(Left + Width, Bottom, 1.1d * Ttext.SizeWidth, 1.1d * Ttext.SizeHeight);
+                    Ttext.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignVCenter, Wline, CorelDRAW.cdrTextAlignOrigin.cdrTextAlignBoundingBox);
+                    Ttext.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignHCenter, Wline, CorelDRAW.cdrTextAlignOrigin.cdrTextAlignBoundingBox);
+                    Trect.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignVCenter, Ttext);
+                    Trect.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignHCenter, Ttext);
+                    Trect.Fill.ApplyUniformFill(White);
+                    Trect.Outline.Width = 0;
+                    Trect.OrderBackOf(Ttext);
+                    SR.Add(Trect);
+                }
+
                 SR.Add(Lrect);
                 SR.Add(Wline);
                 SR.Add(Ttext);

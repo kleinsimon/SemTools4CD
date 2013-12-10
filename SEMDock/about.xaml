@@ -1,0 +1,19 @@
+﻿<Window x:Class="SEMTools4CD.about"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="about" Height="300" Width="300">
+    <Grid>
+        <StackPanel Margin="0">
+            <TextBlock TextWrapping="Wrap">
+                This AddIn for Corel Draw X6 enables you to quickly add micron-bars to images.<LineBreak/>
+                Just select an image and set the appropriate settings in the docker window. Clicking "create" arranges the image the way you set.
+                <LineBreak/><LineBreak/>
+                © Simon Klein
+                <Hyperlink NavigateUri="http://www.simonklein.de" Click="Hyperlink_Click_1">
+                    http://www.simonklein.de
+                </Hyperlink>
+            </TextBlock>
+            <Label x:Name="LabelVersion" Content="000"/>
+        </StackPanel>
+    </Grid>
+</Window>

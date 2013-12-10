@@ -110,7 +110,7 @@ namespace SEMTools4CD
                 {
                     currentSettings = semImageData.FromString(CDWin.ActiveSelection.Shapes[1].Properties["semItem", 1]);
                 }
-                catch                {                }
+                catch { }
             }
             else
             {
@@ -592,6 +592,12 @@ namespace SEMTools4CD
                 catch { }
                 e.Handled = true;
             }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            about ab = new about();
+            ab.ShowDialog();
         }
     }
 

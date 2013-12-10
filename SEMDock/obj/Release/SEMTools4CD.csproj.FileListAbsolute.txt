@@ -52,3 +52,5 @@ D:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.Properties.Resources.
 D:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.csproj.GenerateResource.Cache
 D:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.dll
 D:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Release\SEMTools4CD.pdb
+D:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Release\about.baml
+D:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Release\about.g.cs

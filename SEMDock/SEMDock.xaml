@@ -218,9 +218,10 @@
             </TabControl>
         </Expander>
         <StackPanel Height="30" HorizontalAlignment="Center" Orientation="Horizontal" Margin="0,0,0,0">
-            <Button x:Name="CreateButton" Content="Create/Save" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="CreateButton_Click" IsDefault="True"/>
             <Button x:Name="SaveButton" Content="Save Default" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="SaveButton_Click"/>
             <Button x:Name="SaveButton_Copy" Content="Reset" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="SaveButton_Copy_Click"/>
+            <Button Content="About" Margin="5,2" Click="Button_Click_1"/>
         </StackPanel>
+        <Button x:Name="CreateButton" Content="Create/Save" Margin="0,15,0,0" HorizontalAlignment="Center" Width="Auto" Click="CreateButton_Click" IsDefault="True" Height="26"/>
     </StackPanel>
 </UserControl>

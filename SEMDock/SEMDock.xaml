@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:diagnostics="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              xmlns:local="clr-namespace:SEMTools4CD" x:Class="SEMTools4CD.SEMDock"
-             mc:Ignorable="d" d:DesignWidth="271" VerticalAlignment="Top" DragEnter="UserControl_DragEnter" AllowDrop="True">
+             mc:Ignorable="d" d:DesignWidth="271" VerticalAlignment="Top" DragEnter="UserControl_DragEnter" AllowDrop="True"
+             x:Name="_this">
     <UserControl.Resources>
         <local:BooleanToVisibilityConverter x:Key="bvc" True="Visible" False="Collapsed" />
         <local:BooleanToVisibilityConverter x:Key="nbvc" True="Collapsed" False="Visible" />
@@ -151,15 +152,46 @@
                             <Label Height="26" Content="Upper-Right" VerticalAlignment="Top" Margin="5,2" ToolTip="Annotation in the upper-right corner"/>
                             <Label Height="26" Content="Lower-Left" VerticalAlignment="Top" Margin="5,2" ToolTip="Annotation in the lower-left corner"/>
                             <Label Height="26" Content="Font-Size [pt]" VerticalAlignment="Top" Margin="5,2" ToolTip="Default 10pt"/>
+                            <Label Height="26" Content="Font" VerticalAlignment="Top" Margin="5,2" ToolTip="Default 10pt"/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,0" Grid.Column="1">
                             <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=ULtext}" VerticalAlignment="Top" Margin="5,2" ToolTip="Annotation in the upper-left corner"/>
                             <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=URtext}" VerticalAlignment="Top" Margin="5,2" ToolTip="Annotation in the upper-right corner"/>
                             <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BLtext}" VerticalAlignment="Top" Margin="5,2" ToolTip="Annotation in the lower-left corner"/>
                             <StackPanel Height="26" Margin="5,2" Orientation="Horizontal">
-                                <TextBox TextWrapping="Wrap" Text="{Binding Path=FontSize}" Margin="0,0,5,0" Width="40" ToolTip="Default 10pt"/>
+                                <TextBox TextWrapping="Wrap" Text="{Binding Path=FontSize}" Margin="0,0,5,0" Width="30" ToolTip="Default 10pt" Height="26" VerticalAlignment="Bottom"/>
                                 <CheckBox IsChecked="{Binding Path=TextBold}" Content="B" BorderThickness="1" Margin="2,5" FontWeight="Bold" ToolTip="Default off"/>
                             </StackPanel>
+                            <ComboBox 
+          xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+          ItemTemplate="{DynamicResource FontTemplate}" SelectedValue="{Binding Path=Font}">
+                                <ComboBox.Resources>
+
+                                    <CollectionViewSource x:Key="myFonts" Source="{Binding Source={x:Static Fonts.SystemFontFamilies}}">
+                                        <CollectionViewSource.SortDescriptions>
+                                            <ComponentModel:SortDescription PropertyName="Source" />
+                                        </CollectionViewSource.SortDescriptions>
+                                    </CollectionViewSource>
+
+                                    <Style x:Key="FontStyle">
+                                        <Setter Property="Control.FontFamily" Value="{Binding Source}" />
+                                        <Setter Property="Control.FontSize" Value="12" />
+                                    </Style>
+
+                                    <DataTemplate x:Key="FontTemplate">
+                                        <StackPanel VirtualizingStackPanel.IsVirtualizing="True">
+                                            <TextBlock Style="{StaticResource FontStyle}"
+                           Text="{Binding Source}"
+                           ToolTip="{Binding Source}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+
+                                </ComboBox.Resources>
+
+                                <ComboBox.ItemsSource>
+                                    <Binding Source="{StaticResource myFonts}" />
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
                         </StackPanel>
                     </Grid>
                 </TabItem>

@@ -86,7 +86,7 @@ namespace SEMTools4CD
                     calibList.Add(it);
                 }
             }
-            catch
+            catch //(Exception ex)
             {
                 //MessageBox.Show(ex.Message);
             }
@@ -110,10 +110,7 @@ namespace SEMTools4CD
                 {
                     currentSettings = semImageData.FromString(CDWin.ActiveSelection.Shapes[1].Properties["semItem", 1]);
                 }
-                catch
-                {
-
-                }
+                catch                {                }
             }
             else
             {
@@ -346,14 +343,15 @@ namespace SEMTools4CD
 
             if (d.ValInBar == true)
             {
-                Wheight = Lheight + LmarginV;
+                Wheight = Theight + 2 * TmarginV;
             }
 
             if (!NoBar)
             {
-                Lrect = CDWin.ActiveLayer.CreateRectangle2(Left + Width - Wwidth, Bottom, Wwidth, Wheight + ((d.ValInBar!=true) ? Theight : 0));
+                Lrect = CDWin.ActiveLayer.CreateRectangle2(Left + Width - Wwidth, Bottom, Wwidth, Wheight + ((d.ValInBar != true) ? Theight : 0));
                 Wline = CDWin.ActiveLayer.CreateLineSegment(Left + Width - LmarginH - Lwidth, Bottom + Wheight / 2, Left + Width - LmarginH, Bottom + Wheight / 2);
-                Ttext = CDWin.ActiveLayer.CreateArtisticText(Left + Width - Wwidth / 2, Bottom + Wheight / 2 + TmarginV, d.BarText, Alignment: CorelDRAW.cdrAlignment.cdrCenterAlignment, Size: d.FontSize);
+                Ttext = CDWin.ActiveLayer.CreateArtisticText(Left + Width - Wwidth / 2, Bottom + Wheight / 2 + TmarginV, d.BarText, Alignment: CorelDRAW.cdrAlignment.cdrCenterAlignment, Size: d.FontSize, Font: d.FontName);
+                //Ttext.Text.Story.Font
 
                 Ttext.Text.Story.Bold = d.TextBold == true;
                 Lrect.Outline.Width = 0;
@@ -367,7 +365,7 @@ namespace SEMTools4CD
                 if (d.ValInBar == true)
                 {
                     Shape Trect;
-                    Trect = CDWin.ActiveLayer.CreateRectangle2(Left + Width, Bottom, 1.1d * Ttext.SizeWidth, 1.1d * Ttext.SizeHeight);
+                    Trect = CDWin.ActiveLayer.CreateRectangle2(Left + Width, Bottom, 2d * TmarginH + Ttext.SizeWidth, Ttext.SizeHeight);
                     Ttext.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignVCenter, Wline, CorelDRAW.cdrTextAlignOrigin.cdrTextAlignBoundingBox);
                     Ttext.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignHCenter, Wline, CorelDRAW.cdrTextAlignOrigin.cdrTextAlignBoundingBox);
                     Trect.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignVCenter, Ttext);
@@ -388,8 +386,8 @@ namespace SEMTools4CD
             if (d.ULtext.Trim() != "")
             {
                 Shape back, text;
-                text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + Height - Theight - TmarginV, d.ULtext, Alignment: CorelDRAW.cdrAlignment.cdrLeftAlignment, Size: d.FontSize);
-                back = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom + Height - Theight - 2 * TmarginV, text.SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
+                text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + Height - Theight - TmarginV, d.ULtext, Alignment: CorelDRAW.cdrAlignment.cdrLeftAlignment, Size: d.FontSize, Font: d.FontName);
+                back = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom + Height - Theight - 2d * TmarginV, text.SizeWidth + 2d * TmarginH, Theight + 2 * TmarginV);
                 back.Fill.ApplyUniformFill(White);
                 back.Outline.Width = 0;
                 back.OrderBackOf(text);
@@ -401,7 +399,7 @@ namespace SEMTools4CD
             if (d.URtext != "")
             {
                 Shape back, text;
-                text = CDWin.ActiveLayer.CreateArtisticText(Left + Width - TmarginH, Bottom + Height - Theight - TmarginV, d.URtext, Alignment: CorelDRAW.cdrAlignment.cdrRightAlignment, Size: d.FontSize);
+                text = CDWin.ActiveLayer.CreateArtisticText(Left + Width - TmarginH, Bottom + Height - Theight - TmarginV, d.URtext, Alignment: CorelDRAW.cdrAlignment.cdrRightAlignment, Size: d.FontSize, Font: d.FontName);
                 back = CDWin.ActiveLayer.CreateRectangle2(Left + Width - text.SizeWidth - 2 * TmarginH, Bottom + Height - Theight - 2 * TmarginV, TextShapes[TextShapes.Count].SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
                 back.Fill.ApplyUniformFill(White);
                 back.Outline.Width = 0;
@@ -414,7 +412,7 @@ namespace SEMTools4CD
             if (d.BLtext != "")
             {
                 Shape back, text;
-                text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + TmarginV, d.BLtext, Alignment: CorelDRAW.cdrAlignment.cdrLeftAlignment, Size: d.FontSize);
+                text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + TmarginV, d.BLtext, Alignment: CorelDRAW.cdrAlignment.cdrLeftAlignment, Size: d.FontSize, Font: d.FontName);
                 back = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom, text.SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
                 back.Fill.ApplyUniformFill(White);
                 back.Outline.Width = 0;
@@ -471,7 +469,7 @@ namespace SEMTools4CD
         private void ButtonChooseCalib_Click(object sender, RoutedEventArgs e)
         {
             CalibItem item = calibListView.SelectedItem as CalibItem;
-            if (item!=null) 
+            if (item != null)
                 currentSettings.Calibration = item.Calibration;
         }
 
@@ -578,7 +576,7 @@ namespace SEMTools4CD
             {
                 changeItemName.Visibility = System.Windows.Visibility.Visible;
                 TextListViewName.DataContext = item;
-                e.Handled =true;
+                e.Handled = true;
             }
         }
 

@@ -114,6 +114,8 @@ namespace SEMTools4CD
         private float _BarMaxWidth = 5f;
         [DataMember(Name = "ValInBar")]
         private bool? _ValInBar = false;
+        [DataMember(Name = "Font")]
+        private string _Font = "Arial";
 
         public string ULtext { get { return _ULtext; } set { _ULtext = value; NotifyPropertyChanged(""); } }
         public string URtext { get { return _URtext; } set { _URtext = value; NotifyPropertyChanged(""); } }
@@ -132,6 +134,8 @@ namespace SEMTools4CD
         public float BarMinWidth { get { return _BarMinWidth; } set { _BarMinWidth = value; NotifyPropertyChanged(""); } }
         public float BarMaxWidth { get { return _BarMaxWidth; } set { _BarMaxWidth = value; NotifyPropertyChanged(""); } }
         public bool? ValInBar { get { return _ValInBar; } set { _ValInBar = value; NotifyPropertyChanged(""); } }
+        public System.Windows.Media.FontFamily Font { get { return new System.Windows.Media.FontFamily(_Font); } set { _Font = value.Source; NotifyPropertyChanged(""); } }
+        public string FontName { get { return _Font; } set { _Font = value; NotifyPropertyChanged(""); } }
 
 
         public override string ToString()
@@ -412,10 +416,10 @@ namespace SEMTools4CD
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void NotifyPropertyChanged(string name)
+        protected void NotifyPropertyChanged(string n)
         {
             if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
+                PropertyChanged(this, new PropertyChangedEventArgs(n));
         }
     }
 }

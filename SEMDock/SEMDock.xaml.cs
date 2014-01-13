@@ -122,7 +122,6 @@ namespace SEMTools4CD
         void currentSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             DoDecorate();
-            MessageBox.Show(e.PropertyName);
         }
 
         private void ListView_DragEnter_1(object sender, DragEventArgs e)
@@ -179,6 +178,8 @@ namespace SEMTools4CD
         {
             try
             {
+                CDWin.ActiveDocument.BeginCommandGroup("SEM-Group");
+                CDWin.Application.Optimization = true;
                 locked = true;
                 if (CDWin == null || CDWin.ActiveDocument == null)
                 {
@@ -247,6 +248,9 @@ namespace SEMTools4CD
                 {
                     editShapes.Clear();
                 }
+                CDWin.Application.Optimization = false;
+                CDWin.ActiveWindow.Refresh();
+                CDWin.ActiveDocument.EndCommandGroup();
 
             }
             catch (Exception ex)
@@ -258,8 +262,6 @@ namespace SEMTools4CD
 
         private void decorateShape(semImage curShape)
         {
-            CDWin.Application.Optimization = true;
-            CDWin.ActiveDocument.BeginCommandGroup("SEM-Group");
             ShapeRange SR = new ShapeRange();
             ShapeRange TextShapes = new ShapeRange();
             Shape Brect, Lrect, Wline, Ttext, Gr;
@@ -452,8 +454,6 @@ namespace SEMTools4CD
             CDWin.Application.Refresh();
             CDWin.ActiveDocument.ClearSelection();
 
-            CDWin.ActiveDocument.EndCommandGroup();
-            CDWin.Application.Optimization = false;
             Brect.Selected = true;
         }
 

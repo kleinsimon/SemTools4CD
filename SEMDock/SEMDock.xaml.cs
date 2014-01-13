@@ -256,6 +256,13 @@ namespace SEMTools4CD
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                try
+                {
+                    CDWin.Application.Optimization = false;
+                    CDWin.ActiveWindow.Refresh();
+                    CDWin.ActiveDocument.EndCommandGroup();
+                }
+                catch { }
             }
             locked = false;
         }
@@ -349,6 +356,7 @@ namespace SEMTools4CD
             Brect.Outline.Width = ptToUnit(d.BorderWidth);
 
             s.Name = "semItemContent";
+            Brect.OrderBackOf(s);
             s.AddToPowerClip(Brect, CorelDRAW.cdrTriState.cdrFalse);
 
             if (d.ValInBar == true)

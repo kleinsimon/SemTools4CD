@@ -117,25 +117,25 @@ namespace SEMTools4CD
         [DataMember(Name = "Font")]
         private string _Font = "Arial";
 
-        public string ULtext { get { return _ULtext; } set { _ULtext = value; NotifyPropertyChanged(""); } }
-        public string URtext { get { return _URtext; } set { _URtext = value; NotifyPropertyChanged(""); } }
-        public string BLtext { get { return _BLtext; } set { _BLtext = value; NotifyPropertyChanged(""); } }
-        public string BarText { get { return _BarText; } set { _BarText = value; NotifyPropertyChanged(""); } }
-        public string filename { get { return _filename; } set { _filename = value; NotifyPropertyChanged(""); } }
-        public float FontSize { get { return _FontSize; } set { _FontSize = value; NotifyPropertyChanged(""); } }
-        public float BarWidth { get { return _BarWidth; } set { _BarWidth = value; NotifyPropertyChanged(""); } }
-        public float BorderWidth { get { return _BorderWidth; } set { _BorderWidth = value; NotifyPropertyChanged(""); } }
-        public float Width { get { return _Width; } set { _Width = value; NotifyPropertyChanged(""); } }
-        public float Height { get { return _Height; } set { _Height = value; NotifyPropertyChanged(""); } }
-        public double BarLength { get { return _BarLength; } set { _BarLength = value; NotifyPropertyChanged(""); } }
-        public double Calibration { get { return _Calibration; } set { _Calibration = value; NotifyPropertyChanged(""); } }
-        public int Mode { get { return _Mode; } set { _Mode = value; NotifyPropertyChanged(""); } }
-        public bool? TextBold { get { return _TextBold; } set { _TextBold = value; NotifyPropertyChanged(""); } }
-        public float BarMinWidth { get { return _BarMinWidth; } set { _BarMinWidth = value; NotifyPropertyChanged(""); } }
-        public float BarMaxWidth { get { return _BarMaxWidth; } set { _BarMaxWidth = value; NotifyPropertyChanged(""); } }
-        public bool? ValInBar { get { return _ValInBar; } set { _ValInBar = value; NotifyPropertyChanged(""); } }
-        public System.Windows.Media.FontFamily Font { get { return new System.Windows.Media.FontFamily(_Font); } set { _Font = value.Source; NotifyPropertyChanged(""); } }
-        public string FontName { get { return _Font; } set { _Font = value; NotifyPropertyChanged(""); } }
+        public string ULtext { get { return _ULtext; } set { _ULtext = value; NotifyPropertyChanged("ULtext"); } }
+        public string URtext { get { return _URtext; } set { _URtext = value; NotifyPropertyChanged("URtext"); } }
+        public string BLtext { get { return _BLtext; } set { _BLtext = value; NotifyPropertyChanged("BLtext"); } }
+        public string BarText { get { return _BarText; } set { _BarText = value; NotifyPropertyChanged("BarText"); } }
+        public string filename { get { return _filename; } set { _filename = value; NotifyPropertyChanged("filename"); } }
+        public float FontSize { get { return _FontSize; } set { _FontSize = value; NotifyPropertyChanged("FontSize"); } }
+        public float BarWidth { get { return _BarWidth; } set { _BarWidth = value; NotifyPropertyChanged("BarWidth"); } }
+        public float BorderWidth { get { return _BorderWidth; } set { _BorderWidth = value; NotifyPropertyChanged("BorderWidth"); } }
+        public float Width { get { return _Width; } set { _Width = value; NotifyPropertyChanged("Width"); } }
+        public float Height { get { return _Height; } set { _Height = value; NotifyPropertyChanged("Height"); } }
+        public double BarLength { get { return _BarLength; } set { _BarLength = value; NotifyPropertyChanged("BarLength"); } }
+        public double Calibration { get { return _Calibration; } set { _Calibration = value; NotifyPropertyChanged("Calibration"); } }
+        public int Mode { get { return _Mode; } set { _Mode = value; NotifyPropertyChanged("Mode"); } }
+        public bool? TextBold { get { return _TextBold; } set { _TextBold = value; NotifyPropertyChanged("TextBold"); } }
+        public float BarMinWidth { get { return _BarMinWidth; } set { _BarMinWidth = value; NotifyPropertyChanged("BarMinWidth"); } }
+        public float BarMaxWidth { get { return _BarMaxWidth; } set { _BarMaxWidth = value; NotifyPropertyChanged("BarMaxWidth"); } }
+        public bool? ValInBar { get { return _ValInBar; } set { _ValInBar = value; NotifyPropertyChanged("ValInBar"); } }
+        public System.Windows.Media.FontFamily Font { get { return new System.Windows.Media.FontFamily(_Font); } set { _Font = value.Source; NotifyPropertyChanged("Font"); } }
+        public string FontName { get { return _Font; } set { _Font = value; NotifyPropertyChanged("FontName"); } }
 
 
         public override string ToString()

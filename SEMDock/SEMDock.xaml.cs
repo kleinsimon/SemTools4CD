@@ -109,6 +109,7 @@ namespace SEMTools4CD
                 try
                 {
                     currentSettings = semImageData.FromString(CDWin.ActiveSelection.Shapes[1].Properties["semItem", 1]);
+                    currentSettings.PropertyChanged += currentSettings_PropertyChanged;
                 }
                 catch { }
             }
@@ -116,6 +117,12 @@ namespace SEMTools4CD
             {
                 currentSettings = Settings;
             }
+        }
+
+        void currentSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            DoDecorate();
+            MessageBox.Show(e.PropertyName);
         }
 
         private void ListView_DragEnter_1(object sender, DragEventArgs e)
@@ -164,6 +171,11 @@ namespace SEMTools4CD
         }
 
         private void CreateButton_Click(object sender, RoutedEventArgs e)
+        {
+            DoDecorate();
+        }
+
+        private void DoDecorate()
         {
             try
             {
@@ -223,8 +235,6 @@ namespace SEMTools4CD
                     return;
                 }
 
-                CDWin.ActiveDocument.BeginCommandGroup("semItem");
-                CDWin.Application.Optimization = true;
                 try
                 {
                     foreach (semImage img in editShapes)
@@ -232,14 +242,10 @@ namespace SEMTools4CD
                         decorateShape(img);
                     }
                     editShapes.Clear();
-                    CDWin.ActiveDocument.EndCommandGroup();
-                    CDWin.Application.Optimization = false;
                 }
                 catch
                 {
                     editShapes.Clear();
-                    CDWin.ActiveDocument.EndCommandGroup();
-                    CDWin.Application.Optimization = false;
                 }
 
             }
@@ -252,6 +258,8 @@ namespace SEMTools4CD
 
         private void decorateShape(semImage curShape)
         {
+            CDWin.Application.Optimization = true;
+            CDWin.ActiveDocument.BeginCommandGroup("SEM-Group");
             ShapeRange SR = new ShapeRange();
             ShapeRange TextShapes = new ShapeRange();
             Shape Brect, Lrect, Wline, Ttext, Gr;
@@ -389,6 +397,9 @@ namespace SEMTools4CD
                 text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + Height - Theight - TmarginV, d.ULtext, Alignment: CorelDRAW.cdrAlignment.cdrLeftAlignment, Size: d.FontSize, Font: d.FontName);
                 back = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom + Height - Theight - 2d * TmarginV, text.SizeWidth + 2d * TmarginH, Theight + 2 * TmarginV);
                 back.Fill.ApplyUniformFill(White);
+                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignHCenter, back);
+                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignBottom, back, CorelDRAW.cdrTextAlignOrigin.cdrTextAlignFirstBaseline);
+                text.BottomY += TmarginV;
                 back.Outline.Width = 0;
                 back.OrderBackOf(text);
                 text.Text.Story.Bold = d.TextBold == true;
@@ -400,8 +411,11 @@ namespace SEMTools4CD
             {
                 Shape back, text;
                 text = CDWin.ActiveLayer.CreateArtisticText(Left + Width - TmarginH, Bottom + Height - Theight - TmarginV, d.URtext, Alignment: CorelDRAW.cdrAlignment.cdrRightAlignment, Size: d.FontSize, Font: d.FontName);
-                back = CDWin.ActiveLayer.CreateRectangle2(Left + Width - text.SizeWidth - 2 * TmarginH, Bottom + Height - Theight - 2 * TmarginV, TextShapes[TextShapes.Count].SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
+                back = CDWin.ActiveLayer.CreateRectangle2(Left + Width - text.SizeWidth - 2 * TmarginH, Bottom + Height - Theight - 2 * TmarginV, text.SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
                 back.Fill.ApplyUniformFill(White);
+                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignHCenter, back);
+                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignBottom, back, CorelDRAW.cdrTextAlignOrigin.cdrTextAlignFirstBaseline);
+                text.BottomY += TmarginV;
                 back.Outline.Width = 0;
                 back.OrderBackOf(text);
                 text.Text.Story.Bold = d.TextBold == true;
@@ -415,6 +429,9 @@ namespace SEMTools4CD
                 text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + TmarginV, d.BLtext, Alignment: CorelDRAW.cdrAlignment.cdrLeftAlignment, Size: d.FontSize, Font: d.FontName);
                 back = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom, text.SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
                 back.Fill.ApplyUniformFill(White);
+                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignHCenter, back);
+                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignBottom, back, CorelDRAW.cdrTextAlignOrigin.cdrTextAlignFirstBaseline);
+                text.BottomY += TmarginV;
                 back.Outline.Width = 0;
                 back.OrderBackOf(text);
                 text.Text.Story.Bold = d.TextBold == true;
@@ -435,6 +452,8 @@ namespace SEMTools4CD
             CDWin.Application.Refresh();
             CDWin.ActiveDocument.ClearSelection();
 
+            CDWin.ActiveDocument.EndCommandGroup();
+            CDWin.Application.Optimization = false;
             Brect.Selected = true;
         }
 

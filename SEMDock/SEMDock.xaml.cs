@@ -178,8 +178,6 @@ namespace SEMTools4CD
         {
             try
             {
-                CDWin.ActiveDocument.BeginCommandGroup("SEM-Group");
-                CDWin.Application.Optimization = true;
                 locked = true;
                 if (CDWin == null || CDWin.ActiveDocument == null)
                 {
@@ -200,6 +198,7 @@ namespace SEMTools4CD
                         imp.imgData.filename = Path.GetFileName(item.path);
                         imp.imgData.Calibration = item.calibration;
                         imp.imgData.Mode = (int)CreateMode.Calib;
+                        imp.imgData.CutBottom = item.cutBottom / (double)imp.imgShape.Bitmap.SizeHeight;
                         editShapes.Add(imp);
                     }
                     _TiffItems.Clear();
@@ -238,31 +237,25 @@ namespace SEMTools4CD
 
                 try
                 {
+                    CDWin.Application.Optimization = true;
+                    CDWin.ActiveDocument.BeginCommandGroup("SEM-Group");
                     foreach (semImage img in editShapes)
                     {
                         decorateShape(img);
                     }
                     editShapes.Clear();
+                    CDWin.ActiveDocument.EndCommandGroup();
+                    CDWin.Application.Optimization = false;
                 }
                 catch
                 {
                     editShapes.Clear();
                 }
-                CDWin.Application.Optimization = false;
-                CDWin.ActiveWindow.Refresh();
-                CDWin.ActiveDocument.EndCommandGroup();
 
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                try
-                {
-                    CDWin.Application.Optimization = false;
-                    CDWin.ActiveWindow.Refresh();
-                    CDWin.ActiveDocument.EndCommandGroup();
-                }
-                catch { }
             }
             locked = false;
         }
@@ -280,6 +273,8 @@ namespace SEMTools4CD
             bool NoBar = false;
             Shape s = curShape.imgShape;
             semImageData d = curShape.imgData;
+            double OffsetResolution = s.Bitmap.SizeWidth / s.SizeWidth;
+            double bCut = 1d - d.CutBottom;
             Color White, Black;
 
             White = new Color();
@@ -293,12 +288,12 @@ namespace SEMTools4CD
             Left = s.LeftX;
             Bottom = s.BottomY;
 
-            cimgratio = s.SizeHeight / s.SizeWidth;
+            cimgratio = (s.SizeHeight * bCut) / s.SizeWidth;
 
             if (d.Width == 0d && d.Height == 0d)
             {
                 Width = s.SizeWidth;
-                Height = s.SizeHeight;
+                Height = s.SizeHeight * bCut;
             }
             else if (d.Width == 0d)
             {
@@ -320,11 +315,11 @@ namespace SEMTools4CD
             if (newRatio <= cimgratio)
             {
                 s.SizeWidth = Width;
-                s.SizeHeight = Width * cimgratio;
+                s.SizeHeight = (Width * cimgratio) / bCut;
             }
             else
             {
-                s.SizeHeight = Height;
+                s.SizeHeight = Height / bCut;
                 s.SizeWidth = Height / cimgratio;
             }
             s.LeftX = Left;
@@ -356,7 +351,7 @@ namespace SEMTools4CD
             Brect.Outline.Width = ptToUnit(d.BorderWidth);
 
             s.Name = "semItemContent";
-            Brect.OrderBackOf(s);
+            s.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignTop, Brect);
             s.AddToPowerClip(Brect, CorelDRAW.cdrTriState.cdrFalse);
 
             if (d.ValInBar == true)
@@ -468,6 +463,11 @@ namespace SEMTools4CD
         double cmToUnit(double centimeter)
         {
             return CDWin.ConvertUnits(centimeter, CorelDRAW.cdrUnit.cdrCentimeter, CDWin.ActiveDocument.Unit);
+        }
+
+        double pxToUnit(long pixels)
+        {
+            return CDWin.ConvertUnits(pixels, CorelDRAW.cdrUnit.cdrPixel, CDWin.ActiveDocument.Unit);
         }
 
         double ptToUnit(double centimeter)

@@ -14,39 +14,64 @@ namespace SEMTools4CD
 {
     public class TIFFitem
     {
-        string _path, _filename;
+        string _path, _filename, _unit;
         double _calibration = 1d;
+        long _cutBottom = 0;
 
         public string path { get { return _path; } set { _path = value; } }
         public string filename { get { return _filename; } set { _filename = value; } }
         public double calibration { get { return _calibration; } set { _calibration = value; } }
+        public string unit { get { return _unit; } set { _unit = value; } }
+        public long cutBottom { get { return _cutBottom; } set { _cutBottom = value; } }
+
 
         public TIFFitem(string file)
         {
+            string cstring = "";
             if (File.Exists(file))
             {
                 path = file;
                 filename = Path.GetFileName(file);
+                string supFile = Path.GetDirectoryName(path) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(file) + "-tif.hdr";
 
-                StreamReader FS = new StreamReader(file);
-                string line = "";
-                string cstring = "";
-
-                while ((line = FS.ReadLine()) != null)
+                if (File.Exists(supFile))
                 {
-                    if (line.Contains("AP_IMAGE_PIXEL_SIZE"))
-                    {
-                        cstring = FS.ReadLine().Split('=')[1];
-                        break;
-                    }
+                    cstring = findKeyValuePair(supFile, "PixelSizeX");
+                    string cutstring = findKeyValuePair(supFile, "ImageStripSize");
+                    long valcut = 0;
+                    long.TryParse(cutstring, out valcut);
+                    cutBottom = valcut;
                 }
-
-                if (cstring != "") calibration = parseCalibMicron(cstring);
+                else
+                {
+                    cstring = findKeyValuePair(path, "AP_IMAGE_PIXEL_SIZE");
+                }
+                if (cstring != "") parseCalibMicron(cstring);
             }
-
         }
 
-        private double parseCalibMicron(string Cstring)
+        private string findKeyValuePair(string FileName, string key, char seperator = '=', bool nextLine=false)
+        {
+            StreamReader FS = new StreamReader(FileName);
+            string line = "";
+            string cstring = string.Empty;
+
+            while ((line = FS.ReadLine()) != null)
+            {
+                if (line.Contains(key))
+                {
+                    if (nextLine)
+                        cstring = line = FS.ReadLine().Split(seperator)[1];
+                    else
+                        cstring = line = line.Split(seperator)[1];
+                    break;
+                }
+            }
+            FS.Close();
+            return cstring;
+        }
+
+        private void parseCalibMicron(string Cstring)
         {
             double val = 0d;
             string[] tmp;
@@ -58,22 +83,18 @@ namespace SEMTools4CD
             tmp = Cstring.Trim().Split(' ');
             if (double.TryParse(tmp[0], NumberStyles.Any, NF, out val))
             {
-                tmp[1] = tmp[1].Trim();
-
-                switch (tmp[1])
+                if (tmp.Length > 1)
                 {
-                    case "nm": val = val / 1000d;
-                        break;
-                    case "mm": val = val * 1000d;
-                        break;
-                    case "pm": val = val / 1000000d;
-                        break;
-                    default:
-                        break;
+                    unit = tmp[1].Trim();
                 }
-            }
+                else
+                {
+                    unit = "m";
+                }
 
-            return val;
+                ValWithUnit t = new ValWithUnit(val, unit);
+                calibration = t.getInUnit("µm").Value;
+            }
         }
     }
 
@@ -104,6 +125,8 @@ namespace SEMTools4CD
         private double _BarLength = 3f;
         [DataMember(Name = "Calibration")]
         private double _Calibration = 1d;
+        [DataMember(Name = "Unit")]
+        private string _Unit = "";
         [DataMember(Name = "Mode")]
         private int _Mode = 1;
         [DataMember(Name = "TextBold")]
@@ -116,6 +139,8 @@ namespace SEMTools4CD
         private bool? _ValInBar = false;
         [DataMember(Name = "Font")]
         private string _Font = "Arial";
+        [DataMember(Name = "CutBottom")]
+        private double _CutBottom = 1d;
 
         public string ULtext { get { return _ULtext; } set { _ULtext = value; NotifyPropertyChanged("ULtext"); } }
         public string URtext { get { return _URtext; } set { _URtext = value; NotifyPropertyChanged("URtext"); } }
@@ -129,6 +154,7 @@ namespace SEMTools4CD
         public float Height { get { return _Height; } set { _Height = value; NotifyPropertyChanged("Height"); } }
         public double BarLength { get { return _BarLength; } set { _BarLength = value; NotifyPropertyChanged("BarLength"); } }
         public double Calibration { get { return _Calibration; } set { _Calibration = value; NotifyPropertyChanged("Calibration"); } }
+        public string Unit { get { return _Unit; } set { _Unit = value; NotifyPropertyChanged("Unit"); } }
         public int Mode { get { return _Mode; } set { _Mode = value; NotifyPropertyChanged("Mode"); } }
         public bool? TextBold { get { return _TextBold; } set { _TextBold = value; NotifyPropertyChanged("TextBold"); } }
         public float BarMinWidth { get { return _BarMinWidth; } set { _BarMinWidth = value; NotifyPropertyChanged("BarMinWidth"); } }
@@ -136,6 +162,7 @@ namespace SEMTools4CD
         public bool? ValInBar { get { return _ValInBar; } set { _ValInBar = value; NotifyPropertyChanged("ValInBar"); } }
         public System.Windows.Media.FontFamily Font { get { return new System.Windows.Media.FontFamily(_Font); } set { _Font = value.Source; NotifyPropertyChanged("Font"); } }
         public string FontName { get { return _Font; } set { _Font = value; NotifyPropertyChanged("FontName"); } }
+        public double CutBottom { get { return _CutBottom; } set { _CutBottom = value; NotifyPropertyChanged("CutBottom"); } }
 
 
         public override string ToString()
@@ -189,12 +216,16 @@ namespace SEMTools4CD
     {
         public bool vertical { get; set; }
         public double realWidth { get; set; }
-        public double imgResolution { get {
-            if (vertical)
-                return img.Bitmap.SizeHeight / img.SizeHeight; 
-            else
-                return img.Bitmap.SizeWidth / img.SizeWidth; 
-        } }
+        public double imgResolution
+        {
+            get
+            {
+                if (vertical)
+                    return img.Bitmap.SizeHeight / img.SizeHeight;
+                else
+                    return img.Bitmap.SizeWidth / img.SizeWidth;
+            }
+        }
         public double calibrationFactor
         {
             get
@@ -404,9 +435,12 @@ namespace SEMTools4CD
         private string _name = "New Item";
         [DataMember(Name = "Calibration")]
         private double _calibration = 1d;
+        [DataMember(Name = "Unit")]
+        private string _unit = "";
 
         public string Name { get { return _name; } set { _name = value; NotifyPropertyChanged("Name"); } }
         public double Calibration { get { return _calibration; } set { _calibration = value; NotifyPropertyChanged("Calib"); } }
+        public string Unit { get { return _unit; } set { _unit = value; NotifyPropertyChanged("Unit"); } }
 
         public CalibItem(string name, double calib)
         {
@@ -422,4 +456,82 @@ namespace SEMTools4CD
                 PropertyChanged(this, new PropertyChangedEventArgs(n));
         }
     }
+
+    public class ValWithUnit
+    {
+        static Dictionary<string, double> Units = new Dictionary<string, double>()
+            { // All relative to mm
+                {"fm", 1e-12d},
+                {"pm", 1e-9d},
+                {"nm", 1e-6d},
+                {"µm", 1e-3d},
+                {"mm", 1d},
+                {"cm", 1e+1d},
+                {"dm", 1e+2d},
+                {"m" , 1e+3d},
+                {"hm", 1e+5d},
+                {"km", 1e+6d},
+            };
+
+        private double _value = 0d;
+        private string _unit = "";
+
+        public double Value { get { return _value; } set { _value = value; } }
+        public string Unit { get { return _unit; } set { _unit = value; } }
+        public double Coefficient { get { return ValWithUnit.Units.GetValueOrDefault(Unit, 1d); } }
+
+
+        public ValWithUnit(double value, string unit)
+        {
+            Value = value;
+            Unit = unit;
+        }
+
+        public ValWithUnit getInUnit(string targetUnit)
+        {
+            string tu = targetUnit.Trim();
+            double exp = this.Coefficient / ValWithUnit.Units.GetValueOrDefault(tu, 1d);
+            return new ValWithUnit(Value * exp, tu);
+        }
+
+        public static ValWithUnit operator *(ValWithUnit src, double pot)
+        {
+            double difpot = src.Coefficient * pot;
+            var Srt = Units.OrderBy(v => (v.Value - difpot));
+            KeyValuePair<string, double> nextUnit;
+            foreach (KeyValuePair<string, double> kvp in Srt)
+            {
+                if (kvp.Value >= 0d)
+                {
+                    nextUnit = kvp;
+                    break;
+                }
+            }
+
+            return new ValWithUnit(src.Value * pot, src.Unit);
+        }
+    }
+
+    public static class Extensions
+    {
+        public static TValue GetValueOrDefault<TKey, TValue>
+                (this IDictionary<TKey, TValue> dictionary,
+                 TKey key,
+                 TValue defaultValue)
+        {
+            TValue value;
+            return dictionary.TryGetValue(key, out value) ? value : defaultValue;
+        }
+
+        public static TValue GetValueOrDefault<TKey, TValue>
+            (this IDictionary<TKey, TValue> dictionary,
+             TKey key,
+             Func<TValue> defaultValueProvider)
+        {
+            TValue value;
+            return dictionary.TryGetValue(key, out value) ? value
+                 : defaultValueProvider();
+        }
+    }
+
 }

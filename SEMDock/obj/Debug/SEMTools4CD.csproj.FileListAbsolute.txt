@@ -49,3 +49,23 @@ C:\Users\Simon\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\GeneratedInternalTypeH
 C:\Users\sk\SkyDrive\Dev\SEMTools4CD\SEMDock\bin\Debug\SemTools_starter.gms
 C:\Users\sk\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\GeneratedInternalTypeHelper.g.cs
 C:\Users\sk\SkyDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD_MarkupCompile.lref
+C:\Users\sk\AppData\Roaming\Corel\CorelDRAW Graphics Suite X6\Draw\GMS\SemTools_starter.gms
+C:\Users\sk\AppData\Roaming\Corel\CorelDRAW Graphics Suite X6\Draw\GMS\SEMTools4CD.dll.config
+C:\Users\sk\AppData\Roaming\Corel\CorelDRAW Graphics Suite X6\Draw\GMS\SEMTools4CD.dll
+C:\Users\sk\AppData\Roaming\Corel\CorelDRAW Graphics Suite X6\Draw\GMS\SEMTools4CD.pdb
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD.csprojResolveAssemblyReference.cache
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\Interop.CorelDRAW.dll
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\Interop.VGCore.dll
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD.csproj.ResolveComReference.cache
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\about.baml
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\about.g.cs
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMDock.g.cs
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\GeneratedInternalTypeHelper.g.cs
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD_MarkupCompile.cache
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD_MarkupCompile.lref
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMDock.baml
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD.g.resources
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD.Properties.Resources.resources
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD.csproj.GenerateResource.Cache
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD.dll
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\SEMTools4CD.pdb

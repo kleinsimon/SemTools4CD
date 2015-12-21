@@ -44,7 +44,7 @@ namespace SEMTools4CD
                 }
                 else
                 {
-                    cstring = findKeyValuePair(path, "AP_IMAGE_PIXEL_SIZE");
+                    cstring = findKeyValuePair(path, "AP_IMAGE_PIXEL_SIZE", '=' ,true);
                 }
                 if (cstring != "") parseCalibMicron(cstring);
             }

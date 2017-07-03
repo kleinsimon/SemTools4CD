@@ -52,7 +52,8 @@ namespace SEMTools4CD
 
         private string findKeyValuePair(string FileName, string key, char seperator = '=', bool nextLine=false)
         {
-            StreamReader FS = new StreamReader(FileName);
+            StreamReader FS = new StreamReader(FileName, Encoding.Default);
+            
             string line = "";
             string cstring = string.Empty;
 
@@ -86,14 +87,21 @@ namespace SEMTools4CD
                 if (tmp.Length > 1)
                 {
                     unit = tmp[1].Trim();
+                    unit.Replace('\u00b5', 'µ');
+                    unit.Replace('\u03bc', 'µ');
+
                 }
                 else
                 {
                     unit = "m";
+                    MessageBox.Show("Unit " + unit.ToString() + " could not be parsed" );
                 }
 
                 ValWithUnit t = new ValWithUnit(val, unit);
                 calibration = t.getInUnit("µm").Value;
+            } else
+            {
+                MessageBox.Show("Number could not be parsed");
             }
         }
     }

@@ -369,6 +369,7 @@ namespace SEMTools4CD
             }
             else
                 Brect = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom, Width, Height);
+            Brect.OrderBackOf(s);
             Brect.Outline.Color = Black;
             Brect.Outline.Width = ptToUnit(d.BorderWidth);
 
@@ -390,7 +391,8 @@ namespace SEMTools4CD
 
                 Ttext.Text.Story.Bold = d.TextBold == true;
                 Lrect.Outline.Width = 0;
-                Lrect.Fill.ApplyUniformFill(White);
+                if (d.BarBelowImage != true)
+                    Lrect.Fill.ApplyUniformFill(White);
 
                 Wline.Outline.Width = ptToUnit(d.BarWidth);
                 Wline.Outline.Color = Black;
@@ -473,11 +475,14 @@ namespace SEMTools4CD
             else
                 Brect.CenterY = oldCenterY;
 
+
             CDWin.ActiveWindow.Refresh();
             CDWin.Application.Refresh();
             CDWin.ActiveDocument.ClearSelection();
 
+            
             Brect.Selected = true;
+
         }
 
         Shape makeLabel(string contenttext, HorizontalAlignment hAlign, VerticalAlignment vAlign, bool bold, semImageData d, double TmarginH, double TmarginV, double Theight, Color bgColor)

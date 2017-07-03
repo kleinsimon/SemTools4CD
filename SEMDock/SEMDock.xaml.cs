@@ -196,6 +196,7 @@ namespace SEMTools4CD
                         impShape.AlignToPoint(CorelDRAW.cdrAlignType.cdrAlignHCenter, CDWin.Application.ActiveWindow.ActiveView.OriginX, CDWin.Application.ActiveWindow.ActiveView.OriginY);
                         semImage imp = new semImage(CDWin, currentSettings.Clone(), impShape);
                         imp.imgData.filename = Path.GetFileName(item.path);
+                        imp.imgData.ULtext = imp.imgData.filename;
                         imp.imgData.Calibration = item.calibration;
                         imp.imgData.Mode = (int)CreateMode.Calib;
                         imp.imgData.CutBottom = item.cutBottom / (double)imp.imgShape.Bitmap.SizeHeight;
@@ -213,7 +214,9 @@ namespace SEMTools4CD
                             {
                                 if (sh_child.Name == "semItemContent")
                                 {
-                                    editShapes.Add(new semImage(CDWin, currentSettings.Clone(), sh_child));
+                                    semImage ni = new semImage(CDWin, currentSettings.Clone(), sh_child);
+                                    ni.imgData.CutBottom = 0d;
+                                    editShapes.Add(ni);
                                 }
                                 else
                                 {
@@ -225,7 +228,9 @@ namespace SEMTools4CD
                         }
                         else
                         {
-                            editShapes.Add(new semImage(CDWin, currentSettings.Clone(), sh));
+                            semImage ni = new semImage(CDWin, currentSettings.Clone(), sh);
+                            ni.imgData.CutBottom = 0d;
+                            editShapes.Add(ni);
                         }
                     }
                 }
@@ -247,15 +252,19 @@ namespace SEMTools4CD
                     CDWin.ActiveDocument.EndCommandGroup();
                     CDWin.Application.Optimization = false;
                 }
-                catch
+                catch (Exception ex2)
                 {
                     editShapes.Clear();
+                    throw ex2;
                 }
 
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                CDWin.ActiveDocument.EndCommandGroup();
+                CDWin.Application.Optimization = false;
+                locked = false;
             }
             locked = false;
         }
@@ -272,10 +281,12 @@ namespace SEMTools4CD
             double cimgratio;
             bool NoBar = false;
             Shape s = curShape.imgShape;
+            Shape stripe = null;
             semImageData d = curShape.imgData;
             double OffsetResolution = s.Bitmap.SizeWidth / s.SizeWidth;
             double bCut = 1d - d.CutBottom;
             Color White, Black;
+            double stripeH = cmToUnit(1.0d);
 
             White = new Color();
             Black = new Color();
@@ -286,6 +297,7 @@ namespace SEMTools4CD
             oldCenterY = s.CenterY;
 
             Left = s.LeftX;
+
             Bottom = s.BottomY;
 
             cimgratio = (s.SizeHeight * bCut) / s.SizeWidth;
@@ -314,8 +326,10 @@ namespace SEMTools4CD
 
             if (newRatio <= cimgratio)
             {
+                double nH = (Width * cimgratio) / bCut;
+
                 s.SizeWidth = Width;
-                s.SizeHeight = (Width * cimgratio) / bCut;
+                s.SizeHeight = nH;
             }
             else
             {
@@ -346,7 +360,15 @@ namespace SEMTools4CD
             Wwidth = Lwidth + 2 * LmarginH;
             Wheight = Lheight + LmarginV + TmarginV;
 
-            Brect = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom, Width, Height);
+            if (d.BarBelowImage == true)
+            {
+                Brect = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom, Width, Height + stripeH);
+                stripe = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom, Width, stripeH);
+                stripe.Fill.ApplyUniformFill(White);
+                stripe.Outline.Type = CorelDRAW.cdrOutlineType.cdrNoOutline;
+            }
+            else
+                Brect = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom, Width, Height);
             Brect.Outline.Color = Black;
             Brect.Outline.Width = ptToUnit(d.BorderWidth);
 
@@ -394,70 +416,114 @@ namespace SEMTools4CD
                 SR.Add(Ttext);
                 Gr = SR.Group();
                 Gr.AddToPowerClip(Brect, CorelDRAW.cdrTriState.cdrFalse);
+                if (d.BarBelowImage == true)
+                    Gr.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignVCenter, stripe);
             }
 
             if (d.ULtext.Trim() != "")
             {
-                Shape back, text;
-                text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + Height - Theight - TmarginV, d.ULtext, Alignment: CorelDRAW.cdrAlignment.cdrLeftAlignment, Size: d.FontSize, Font: d.FontName);
-                back = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom + Height - Theight - 2d * TmarginV, text.SizeWidth + 2d * TmarginH, Theight + 2 * TmarginV);
-                back.Fill.ApplyUniformFill(White);
-                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignHCenter, back);
-                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignBottom, back, CorelDRAW.cdrTextAlignOrigin.cdrTextAlignFirstBaseline);
-                text.BottomY += TmarginV;
-                back.Outline.Width = 0;
-                back.OrderBackOf(text);
-                text.Text.Story.Bold = d.TextBold == true;
-                TextShapes.Add(text);
-                TextShapes.Add(back);
+                Shape label = makeLabel(d.ULtext, HorizontalAlignment.Left, VerticalAlignment.Top, d.TextBold == true, d, TmarginH, TmarginV, Theight, White);
+                label.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignLeft, s);
+                label.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignTop, s);
+
+                TextShapes.Add(label);
             }
 
             if (d.URtext != "")
             {
-                Shape back, text;
-                text = CDWin.ActiveLayer.CreateArtisticText(Left + Width - TmarginH, Bottom + Height - Theight - TmarginV, d.URtext, Alignment: CorelDRAW.cdrAlignment.cdrRightAlignment, Size: d.FontSize, Font: d.FontName);
-                back = CDWin.ActiveLayer.CreateRectangle2(Left + Width - text.SizeWidth - 2 * TmarginH, Bottom + Height - Theight - 2 * TmarginV, text.SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
-                back.Fill.ApplyUniformFill(White);
-                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignHCenter, back);
-                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignBottom, back, CorelDRAW.cdrTextAlignOrigin.cdrTextAlignFirstBaseline);
-                text.BottomY += TmarginV;
-                back.Outline.Width = 0;
-                back.OrderBackOf(text);
-                text.Text.Story.Bold = d.TextBold == true;
-                TextShapes.Add(text);
-                TextShapes.Add(back);
+                Shape label = makeLabel(d.URtext, HorizontalAlignment.Right, VerticalAlignment.Top, d.TextBold == true, d, TmarginH, TmarginV, Theight, White);
+                label.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignRight, s);
+                label.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignTop, s);
+
+                TextShapes.Add(label);
             }
 
             if (d.BLtext != "")
             {
-                Shape back, text;
-                text = CDWin.ActiveLayer.CreateArtisticText(Left + TmarginH, Bottom + TmarginV, d.BLtext, Alignment: CorelDRAW.cdrAlignment.cdrLeftAlignment, Size: d.FontSize, Font: d.FontName);
-                back = CDWin.ActiveLayer.CreateRectangle2(Left, Bottom, text.SizeWidth + 2 * TmarginH, Theight + 2 * TmarginV);
-                back.Fill.ApplyUniformFill(White);
-                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignHCenter, back);
-                text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignBottom, back, CorelDRAW.cdrTextAlignOrigin.cdrTextAlignFirstBaseline);
-                text.BottomY += TmarginV;
-                back.Outline.Width = 0;
-                back.OrderBackOf(text);
-                text.Text.Story.Bold = d.TextBold == true;
-                TextShapes.Add(text);
-                TextShapes.Add(back);
+                Shape label = makeLabel(d.BLtext, HorizontalAlignment.Left, VerticalAlignment.Bottom, d.TextBold == true, d, TmarginH, TmarginV, Theight, White);
+
+                if (d.BarBelowImage == true)
+                {
+                    label.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignLeft, stripe);
+                    label.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignVCenter, stripe);
+                }
+                else
+                {
+                    label.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignLeft, s);
+                    label.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignBottom, s);
+                }
+
+                TextShapes.Add(label);
             }
 
             TextShapes.AddToPowerClip(Brect, CorelDRAW.cdrTriState.cdrFalse);
+            if (d.BarBelowImage == true)
+            {
+                stripe.AddToPowerClip(Brect, CorelDRAW.cdrTriState.cdrFalse);
+                stripe.OrderToBack();
+            }
 
             Brect.Properties["semItem", 0] = true;
             Brect.Properties["semItem", 1] = curShape.imgData.ToString();
             if (d.filename != "") Brect.Name = d.filename;
 
             Brect.CenterX = oldCenterX;
-            Brect.CenterY = oldCenterY;
+            if (d.BarBelowImage == true)
+                Brect.CenterY = oldCenterY - stripeH / 2.0d;
+            else
+                Brect.CenterY = oldCenterY;
 
             CDWin.ActiveWindow.Refresh();
             CDWin.Application.Refresh();
             CDWin.ActiveDocument.ClearSelection();
 
             Brect.Selected = true;
+        }
+
+        Shape makeLabel(string contenttext, HorizontalAlignment hAlign, VerticalAlignment vAlign, bool bold, semImageData d, double TmarginH, double TmarginV, double Theight, Color bgColor)
+        {
+            Shape back, text;
+            ShapeRange slist = new ShapeRange();
+            CorelDRAW.cdrAlignment talign = CorelDRAW.cdrAlignment.cdrLeftAlignment;
+            CorelDRAW.cdrAlignType salign = CorelDRAW.cdrAlignType.cdrAlignLeft;
+            double hshift = 0d;
+
+            switch (hAlign)
+            {
+                case HorizontalAlignment.Left:
+                    talign = CorelDRAW.cdrAlignment.cdrLeftAlignment;
+                    salign = CorelDRAW.cdrAlignType.cdrAlignLeft;
+                    hshift = TmarginH;
+                    break;
+                case HorizontalAlignment.Right:
+                    talign = CorelDRAW.cdrAlignment.cdrRightAlignment;
+                    salign = CorelDRAW.cdrAlignType.cdrAlignRight;
+                    hshift = -TmarginH;
+                    break;
+                case HorizontalAlignment.Center:
+                    talign = CorelDRAW.cdrAlignment.cdrCenterAlignment;
+                    salign = CorelDRAW.cdrAlignType.cdrAlignHCenter;
+                    break;
+                default:
+                    talign = CorelDRAW.cdrAlignment.cdrLeftAlignment;
+                    hshift = TmarginH;
+                    break;
+            }
+
+            text = CDWin.ActiveLayer.CreateArtisticText(0, 0, contenttext, Alignment: talign, Size: d.FontSize, Font: d.FontName);
+            back = CDWin.ActiveLayer.CreateRectangle2(0, 0, text.SizeWidth + 2d * TmarginH, Theight + 2 * TmarginV);
+            back.Fill.ApplyUniformFill(bgColor);
+            text.AlignToShape(salign, back);
+            text.AlignToShape(CorelDRAW.cdrAlignType.cdrAlignBottom, back, CorelDRAW.cdrTextAlignOrigin.cdrTextAlignFirstBaseline);
+            text.LeftX += hshift;
+            text.BottomY += TmarginV;
+            back.Outline.Width = 0;
+            back.OrderBackOf(text);
+            text.Text.Story.Bold = d.TextBold == true;
+            slist.Add(text);
+            slist.Add(back);
+
+            return slist.Group();
         }
 
         double cmToUnit(double centimeter)

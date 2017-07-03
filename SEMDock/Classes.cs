@@ -137,10 +137,12 @@ namespace SEMTools4CD
         private float _BarMaxWidth = 5f;
         [DataMember(Name = "ValInBar")]
         private bool? _ValInBar = false;
+        [DataMember(Name = "BarBelowImage")]
+        private bool? _BarBelowImage = false;
         [DataMember(Name = "Font")]
         private string _Font = "Arial";
         [DataMember(Name = "CutBottom")]
-        private double _CutBottom = 1d;
+        private double _CutBottom = 0d;
 
         public string ULtext { get { return _ULtext; } set { _ULtext = value; NotifyPropertyChanged("ULtext"); } }
         public string URtext { get { return _URtext; } set { _URtext = value; NotifyPropertyChanged("URtext"); } }
@@ -160,6 +162,7 @@ namespace SEMTools4CD
         public float BarMinWidth { get { return _BarMinWidth; } set { _BarMinWidth = value; NotifyPropertyChanged("BarMinWidth"); } }
         public float BarMaxWidth { get { return _BarMaxWidth; } set { _BarMaxWidth = value; NotifyPropertyChanged("BarMaxWidth"); } }
         public bool? ValInBar { get { return _ValInBar; } set { _ValInBar = value; NotifyPropertyChanged("ValInBar"); } }
+        public bool? BarBelowImage { get { return _BarBelowImage; } set { _BarBelowImage = value; NotifyPropertyChanged("BarBelowImage"); } }
         public System.Windows.Media.FontFamily Font { get { return new System.Windows.Media.FontFamily(_Font); } set { _Font = value.Source; NotifyPropertyChanged("Font"); } }
         public string FontName { get { return _Font; } set { _Font = value; NotifyPropertyChanged("FontName"); } }
         public double CutBottom { get { return _CutBottom; } set { _CutBottom = value; NotifyPropertyChanged("CutBottom"); } }
@@ -357,6 +360,7 @@ namespace SEMTools4CD
             throw new Exception("Invalid call - one way only");
         }
     }
+    
 
     public class semImage
     {
@@ -373,39 +377,46 @@ namespace SEMTools4CD
 
         public void calcScale()
         {
-            double[] res = new double[2];
-            double OffsetResolution = CDWin.ConvertUnits(
-                imgShape.Bitmap.SizeWidth / imgShape.SizeWidth,
-                cdrUnit.cdrCentimeter,
-                CDWin.ActiveDocument.Unit);
-
-            double minVal = imgData.BarMinWidth * OffsetResolution * imgData.Calibration;
-            double pot = Math.Pow(10d, Math.Floor(Math.Log10(minVal)));
-
-            for (int i = 1; i <= 19; i++)
+            try
             {
-                double l, z;
+                double[] res = new double[2];
+                double OffsetResolution = CDWin.ConvertUnits(
+                    imgShape.Bitmap.SizeWidth / imgShape.SizeWidth,
+                    cdrUnit.cdrCentimeter,
+                    CDWin.ActiveDocument.Unit);
 
-                z = i * pot;
-                l = z / (OffsetResolution * imgData.Calibration);
+                double minVal = imgData.BarMinWidth * OffsetResolution * imgData.Calibration;
+                double pot = Math.Pow(10d, Math.Floor(Math.Log10(minVal)));
 
-                if (l >= imgData.BarMinWidth && l <= imgData.BarMaxWidth)
+                for (int i = 1; i <= 19; i++)
                 {
-                    imgData.BarLength = l;
-                    imgData.BarText = getScaleText(z);
-                    return;
-                }
-                else
-                {
-                    z *= 10;
+                    double l, z;
+
+                    z = i * pot;
                     l = z / (OffsetResolution * imgData.Calibration);
+
                     if (l >= imgData.BarMinWidth && l <= imgData.BarMaxWidth)
                     {
                         imgData.BarLength = l;
                         imgData.BarText = getScaleText(z);
                         return;
                     }
+                    else
+                    {
+                        z *= 10;
+                        l = z / (OffsetResolution * imgData.Calibration);
+                        if (l >= imgData.BarMinWidth && l <= imgData.BarMaxWidth)
+                        {
+                            imgData.BarLength = l;
+                            imgData.BarText = getScaleText(z);
+                            return;
+                        }
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
             imgData.BarLength = 2d;
             imgData.BarText = "Error";

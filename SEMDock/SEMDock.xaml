@@ -206,11 +206,13 @@
                                 <Label Height="26" Content="Min Width [cm]" VerticalAlignment="Top" Margin="5,2" ToolTip="Minimum wdith of micron bar (when using calibration factor)"/>
                                 <Label Height="26" Content="Max Width [cm]" VerticalAlignment="Top" Margin="5,2" ToolTip="Maximum wdith of micron bar (when using calibration factor)"/>
                                 <Label Height="26" Content="Value On Bar" VerticalAlignment="Top" Margin="5,2" ToolTip="Display the Value on the Bar (not over it)"/>
+                                <Label Height="26" Content="Bar below Image" VerticalAlignment="Top" Margin="5,2" ToolTip="Display the Value on the Bar (not over it)"/>
                             </StackPanel>
                             <StackPanel Margin="0,0,0,0" Grid.Column="1">
                                 <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BarMinWidth}" VerticalAlignment="Top" Margin="5,2" ToolTip="Minimum wdith of micron bar (when using calibration factor)"/>
                                 <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BarMaxWidth}" VerticalAlignment="Top" Margin="5,2" ToolTip="Maximum wdith of micron bar (when using calibration factor)"/>
-                                <CheckBox IsChecked="{Binding ValInBar}" Content="" BorderThickness="1" Margin="5,5" ToolTip="Default off"/>
+                                <CheckBox IsChecked="{Binding ValInBar}" Content="" BorderThickness="1" Margin="5,2" ToolTip="Default off" Height="26" VerticalContentAlignment="Center"/>
+                                <CheckBox IsChecked="{Binding BarBelowImage}" Content="" BorderThickness="1" Margin="5,2" ToolTip="Default off" Height="26" VerticalContentAlignment="Center"/>
                             </StackPanel>
                         </Grid>
                     </DockPanel>

@@ -44,7 +44,7 @@ namespace SEMTools4CD
         semImageData Settings;
         bool locked = false;
         CalibMeasure CalMes;
-        string[] allowedExt = { ".tiff", ".tif" };
+        string[] allowedExt = { ".tiff", ".tif", ".jpg", ".bmp", ".jpeg", ".png"};
         ObservableCollection<TIFFitem> _TiffItems = new ObservableCollection<TIFFitem>();
         public ObservableCollection<TIFFitem> TiffItems { get { return _TiffItems; } }
 
@@ -136,7 +136,8 @@ namespace SEMTools4CD
         {
             foreach (string file in ((string[])e.Data.GetData(DataFormats.FileDrop, true)))
             {
-                if (allowedExt.Contains(Path.GetExtension(file)))
+                
+                if (allowedExt.Contains(Path.GetExtension(file).ToLower()))
                 {
                     _TiffItems.Add(new TIFFitem(file));
                 }
@@ -149,7 +150,8 @@ namespace SEMTools4CD
 
             dlg.InitialDirectory = Properties.Settings.Default.LastDir;
             dlg.DefaultExt = ".tif";
-            dlg.Filter = "Tiff-File|*.tif;*.tiff";
+            string f = string.Join(";", allowedExt.Select(s => "*" + s));
+            dlg.Filter = "Image|" + f;
             dlg.Multiselect = true;
             bool? result = dlg.ShowDialog();
 
@@ -197,9 +199,11 @@ namespace SEMTools4CD
                         semImage imp = new semImage(CDWin, currentSettings.Clone(), impShape);
                         imp.imgData.filename = Path.GetFileName(item.path);
                         imp.imgData.ULtext = imp.imgData.filename;
-                        imp.imgData.Calibration = item.calibration;
+                        if (item.calibration != 1.0d)
+                            imp.imgData.Calibration = item.calibration;
                         imp.imgData.Mode = (int)CreateMode.Calib;
-                        imp.imgData.CutBottom = item.cutBottom / (double)imp.imgShape.Bitmap.SizeHeight;
+                        if (item.cutBottom >0)
+                            imp.imgData.CutBottom = item.cutBottom;
                         editShapes.Add(imp);
                     }
                     _TiffItems.Clear();
@@ -215,7 +219,7 @@ namespace SEMTools4CD
                                 if (sh_child.Name == "semItemContent")
                                 {
                                     semImage ni = new semImage(CDWin, currentSettings.Clone(), sh_child);
-                                    ni.imgData.CutBottom = 0d;
+                                    //ni.imgData.CutBottom = 0d;
                                     editShapes.Add(ni);
                                 }
                                 else
@@ -229,7 +233,7 @@ namespace SEMTools4CD
                         else
                         {
                             semImage ni = new semImage(CDWin, currentSettings.Clone(), sh);
-                            ni.imgData.CutBottom = 0d;
+                            //ni.imgData.CutBottom = 0d;
                             editShapes.Add(ni);
                         }
                     }
@@ -284,9 +288,14 @@ namespace SEMTools4CD
             Shape stripe = null;
             semImageData d = curShape.imgData;
             double OffsetResolution = s.Bitmap.SizeWidth / s.SizeWidth;
-            double bCut = 1d - d.CutBottom;
+            double bCut = 1d;
             Color White, Black;
             double stripeH = cmToUnit(1.0d);
+
+            if (d.CutBottom != 0)
+            {
+                bCut = 1.0d - ((double) d.CutBottom / s.Bitmap.SizeHeight);
+            }
 
             White = new Color();
             Black = new Color();
@@ -463,6 +472,7 @@ namespace SEMTools4CD
             {
                 stripe.AddToPowerClip(Brect, CorelDRAW.cdrTriState.cdrFalse);
                 stripe.OrderToBack();
+                s.OrderBackOf(stripe);
             }
 
             Brect.Properties["semItem", 0] = true;

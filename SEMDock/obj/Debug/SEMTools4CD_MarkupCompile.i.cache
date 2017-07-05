@@ -4,17 +4,17 @@
 library
 C#
 .cs
-C:\Users\sk\Documents\GitHub\SemTools4CD\SEMDock\obj\Release\
+F:\HiDrive\Dev\SEMTools4CD\SEMDock\obj\Debug\
 SEMTools4CD
 none
 false
-TRACE
+DEBUG;TRACE
 
 2149132805
 
 7-2044328779
-151144726224
+152144452505
 about.xaml;SEMDock.xaml;
 
-True
+False
 

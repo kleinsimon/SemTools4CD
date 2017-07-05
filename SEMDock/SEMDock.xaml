@@ -17,13 +17,13 @@
         <Label Content="SEM-Tools" Margin="5,2"/>
         <Expander x:Name="ExpanderMode" Header="Create / Import" Background="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" IsExpanded="True" Margin="5">
             <TabControl SelectedIndex="{Binding Path=Mode}" x:Name="tabMode">
-                <TabItem Header="By TIFF">
+                <TabItem Header="From File">
                     <DockPanel>
                         <StackPanel Height="30"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" Orientation="Horizontal">
-                            <Button Content="Browse TIFF" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="ButtonBrowseTiffFiles_Click"/>
+                            <Button Content="Browse Image" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="ButtonBrowseTiffFiles_Click"/>
                             <Button Content="Clear" Margin="5,2" HorizontalAlignment="Left" Width="Auto" Click="ButtonClearTiffList_Click"/>
                         </StackPanel>
-                        <ListView x:Name="tiffList" VerticalContentAlignment="Top" DockPanel.Dock="Top" AllowDrop="True" MinHeight="100" MaxHeight="300" DragEnter="ListView_DragEnter_1" Drop="tiffList_Drop" ToolTip="Drop TIFF-Images taken with LEO SEM for automatic calibration">
+                        <ListView x:Name="tiffList" VerticalContentAlignment="Top" DockPanel.Dock="Top" AllowDrop="True" MinHeight="100" MaxHeight="300" DragEnter="ListView_DragEnter_1" Drop="tiffList_Drop" ToolTip="Drop SEM-Images for automatic calibration">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn DisplayMemberBinding="{Binding filename}" Header="Filename" Width="150"/>
@@ -130,12 +130,14 @@
                         <StackPanel Margin="0,0,0,0" Grid.Column="0">
                             <Label Height="26" Content="Width [cm]" VerticalAlignment="Top" Margin="5,2" ToolTip="Default for publications 11cm"/>
                             <Label Height="26" Content="Height [cm]" VerticalAlignment="Top" Margin="5,2"/>
+                            <Label Height="26" Content="Cut Bottom [px]" VerticalAlignment="Top" Margin="5,2"/>
                             <Label Height="26" Content="Bar line [pt]" VerticalAlignment="Top" Margin="5,2" ToolTip="Default 1.5 pt"/>
                             <Label Height="26" Content="Border line [pt]" VerticalAlignment="Top" Margin="5,2" ToolTip="Default 1.5 pt"/>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,0" Grid.Column="1">
                             <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=Width}" VerticalAlignment="Top" Margin="5,2" ToolTip="Default for publications 11cm"/>
                             <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=Height}" VerticalAlignment="Top" Margin="5,2"/>
+                            <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=CutBottom}" VerticalAlignment="Top" Margin="5,2" ToolTip="Cut image at bottom (data region)"/>
                             <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BarWidth}" VerticalAlignment="Top" Margin="5,2" ToolTip="Default 1.5pt"/>
                             <TextBox Height="26" TextWrapping="Wrap" Text="{Binding Path=BorderWidth}" VerticalAlignment="Top" Margin="5,2" ToolTip="Default 1.5pt"/>
                         </StackPanel>

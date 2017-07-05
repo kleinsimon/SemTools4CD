@@ -33,20 +33,36 @@ namespace SEMTools4CD
                 path = file;
                 filename = Path.GetFileName(file);
                 string supFile = Path.GetDirectoryName(path) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(file) + "-tif.hdr";
+                string supFile2 = Path.GetDirectoryName(path) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(file) + ".txt";
+                bool found = false;
 
                 if (File.Exists(supFile))
                 {
                     cstring = findKeyValuePair(supFile, "PixelSizeX");
                     string cutstring = findKeyValuePair(supFile, "ImageStripSize");
-                    long valcut = 0;
-                    long.TryParse(cutstring, out valcut);
-                    cutBottom = valcut;
+                    if (cstring != string.Empty)
+                    {
+                        found = true;
+                        long valcut = 0;
+                        long.TryParse(cutstring, out valcut);
+                        cutBottom = valcut;
+                        parseCalibMicron(cstring);
+                    }
                 }
-                else
+                if (!found && File.Exists(supFile2))
+                {
+                    cstring = findKeyValuePair(supFile2, "PixelSize");
+                    if (cstring != string.Empty)
+                    {
+                        found = true;
+                        parseCalibMicron(cstring);
+                    }
+                }
+                if (!found)
                 {
                     cstring = findKeyValuePair(path, "AP_IMAGE_PIXEL_SIZE", '=' ,true);
-                }
-                if (cstring != "") parseCalibMicron(cstring);
+                    if (cstring != string.Empty) parseCalibMicron(cstring);
+                }                
             }
         }
 
@@ -72,14 +88,16 @@ namespace SEMTools4CD
             return cstring;
         }
 
-        private void parseCalibMicron(string Cstring)
+        private void parseCalibMicron(string Cstring, string defUnit = "µm")
         {
             double val = 0d;
             string[] tmp;
+            unit = defUnit;
 
             NumberFormatInfo NF = new NumberFormatInfo();
             NF.NumberDecimalSeparator = ".";
             NF.NumberGroupSeparator = "";
+            Cstring = Cstring.Replace(',', '.');
 
             tmp = Cstring.Trim().Split(' ');
             if (double.TryParse(tmp[0], NumberStyles.Any, NF, out val))
@@ -90,11 +108,6 @@ namespace SEMTools4CD
                     unit.Replace('\u00b5', 'µ');
                     unit.Replace('\u03bc', 'µ');
 
-                }
-                else
-                {
-                    unit = "m";
-                    MessageBox.Show("Unit " + unit.ToString() + " could not be parsed" );
                 }
 
                 ValWithUnit t = new ValWithUnit(val, unit);
@@ -150,7 +163,7 @@ namespace SEMTools4CD
         [DataMember(Name = "Font")]
         private string _Font = "Arial";
         [DataMember(Name = "CutBottom")]
-        private double _CutBottom = 0d;
+        private long _CutBottom = 0;
 
         public string ULtext { get { return _ULtext; } set { _ULtext = value; NotifyPropertyChanged("ULtext"); } }
         public string URtext { get { return _URtext; } set { _URtext = value; NotifyPropertyChanged("URtext"); } }
@@ -173,7 +186,7 @@ namespace SEMTools4CD
         public bool? BarBelowImage { get { return _BarBelowImage; } set { _BarBelowImage = value; NotifyPropertyChanged("BarBelowImage"); } }
         public System.Windows.Media.FontFamily Font { get { return new System.Windows.Media.FontFamily(_Font); } set { _Font = value.Source; NotifyPropertyChanged("Font"); } }
         public string FontName { get { return _Font; } set { _Font = value; NotifyPropertyChanged("FontName"); } }
-        public double CutBottom { get { return _CutBottom; } set { _CutBottom = value; NotifyPropertyChanged("CutBottom"); } }
+        public long CutBottom { get { return _CutBottom; } set { _CutBottom = value; NotifyPropertyChanged("CutBottom"); } }
 
 
         public override string ToString()

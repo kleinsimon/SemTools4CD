@@ -214,11 +214,13 @@ namespace SEMTools4CD
                     {
                         if (sh.Properties.Exists("semItem", 0))
                         {
+                            ShapeTransform st = new ShapeTransform(sh, ShapeTransform.HAnchor.Left, ShapeTransform.VAnchor.Top);
                             foreach (Shape sh_child in sh.PowerClip.Shapes)
                             {
                                 if (sh_child.Name == "semItemContent")
                                 {
                                     semImage ni = new semImage(CDWin, currentSettings.Clone(), sh_child);
+                                    ni.transforms = st;
                                     //ni.imgData.CutBottom = 0d;
                                     editShapes.Add(ni);
                                 }
@@ -250,7 +252,9 @@ namespace SEMTools4CD
                     CDWin.ActiveDocument.BeginCommandGroup("SEM-Group");
                     foreach (semImage img in editShapes)
                     {
-                        decorateShape(img);
+                        Shape tmp = decorateShape(img);
+                        if (img.transforms != null)
+                            img.transforms.ApplyToShape(tmp);
                     }
                     editShapes.Clear();
                     CDWin.ActiveDocument.EndCommandGroup();
@@ -273,7 +277,7 @@ namespace SEMTools4CD
             locked = false;
         }
 
-        private void decorateShape(semImage curShape)
+        private Shape decorateShape(semImage curShape)
         {
             ShapeRange SR = new ShapeRange();
             ShapeRange TextShapes = new ShapeRange();
@@ -281,7 +285,6 @@ namespace SEMTools4CD
             double LmarginH, LmarginV, TmarginH, TmarginV, Theight;
             double Lwidth, Wwidth, Wheight, Lheight;
             double Left, Bottom, Width, Height;
-            double oldCenterX, oldCenterY;
             double cimgratio;
             bool NoBar = false;
             Shape s = curShape.imgShape;
@@ -291,6 +294,8 @@ namespace SEMTools4CD
             double bCut = 1d;
             Color White, Black;
             double stripeH = cmToUnit(1.0d);
+
+            s.RotationAngle = 0d;
 
             if (d.CutBottom != 0)
             {
@@ -302,11 +307,7 @@ namespace SEMTools4CD
             Black.CMYKAssign(0, 0, 0, 100);
             White.CMYKAssign(0, 0, 0, 0);
 
-            oldCenterX = s.CenterX;
-            oldCenterY = s.CenterY;
-
             Left = s.LeftX;
-
             Bottom = s.BottomY;
 
             cimgratio = (s.SizeHeight * bCut) / s.SizeWidth;
@@ -479,12 +480,6 @@ namespace SEMTools4CD
             Brect.Properties["semItem", 1] = curShape.imgData.ToString();
             if (d.filename != "") Brect.Name = d.filename;
 
-            Brect.CenterX = oldCenterX;
-            if (d.BarBelowImage == true)
-                Brect.CenterY = oldCenterY - stripeH / 2.0d;
-            else
-                Brect.CenterY = oldCenterY;
-
 
             CDWin.ActiveWindow.Refresh();
             CDWin.Application.Refresh();
@@ -492,7 +487,7 @@ namespace SEMTools4CD
 
             
             Brect.Selected = true;
-
+            return Brect;
         }
 
         Shape makeLabel(string contenttext, HorizontalAlignment hAlign, VerticalAlignment vAlign, bool bold, semImageData d, double TmarginH, double TmarginV, double Theight, Color bgColor)

@@ -55,7 +55,7 @@ namespace SEMTools4CD
                     if (cstring != string.Empty)
                     {
                         found = true;
-                        parseCalibMicron(cstring);
+                        parseCalibMicron(cstring, "nm");
                     }
                 }
                 if (!found)
@@ -115,6 +115,96 @@ namespace SEMTools4CD
             } else
             {
                 MessageBox.Show("Number could not be parsed");
+            }
+        }
+    }
+
+    public class ShapeTransform
+    {
+        public double rot, rotCy, rotCx = 0d;
+        public double pX, pY = 0d;
+        public double scaleX, scaleY = 1d;
+        private HAnchor ha = HAnchor.Center;
+        private VAnchor va = VAnchor.Center;
+
+        public enum HAnchor
+        {
+            Left, Center, Right
+        }
+        public enum VAnchor
+        {
+            Top, Center, Bottom
+        }
+
+        public ShapeTransform(Shape s, HAnchor hanchor = HAnchor.Center, VAnchor vanchor = VAnchor.Center)
+        {
+            ha = hanchor;
+            va = vanchor;
+
+            rot = s.RotationAngle;
+            rotCx = s.RotationCenterX;
+            rotCy = s.RotationCenterY;
+
+            scaleX = s.AbsoluteHScale;
+            scaleY = s.AbsoluteVScale;
+
+            switch (ha)
+            {
+                case HAnchor.Center:
+                    pX = s.CenterX;
+                    break;
+                case HAnchor.Left:
+                    pX = s.LeftX;
+                    break;
+                case HAnchor.Right:
+                    pX = s.RightX;
+                    break;
+            }
+            switch (va)
+            {
+                case VAnchor.Center:
+                    pY = s.CenterY;
+                    break;
+                case VAnchor.Top:
+                    pY = s.TopY;
+                    break;
+                case VAnchor.Bottom:
+                    pY = s.BottomY;
+                    break;
+            }
+        }
+        public void ApplyToShape(Shape s)
+        {
+            s.RotationAngle= rot;
+            s.RotationCenterX= rotCx;
+            s.RotationCenterY= rotCy;
+
+            s.SizeWidth = s.OriginalWidth * scaleX;
+            s.SizeHeight = s.OriginalHeight * scaleY;
+
+            switch (ha)
+            {
+                case HAnchor.Center:
+                    s.CenterX = pX;
+                    break;
+                case HAnchor.Left:
+                     s.LeftX = pX;
+                    break;
+                case HAnchor.Right:
+                     s.RightX = pX;
+                    break;
+            }
+            switch (va)
+            {
+                case VAnchor.Center:
+                    s.CenterY = pY;
+                    break;
+                case VAnchor.Top:
+                    s.TopY = pY;
+                    break;
+                case VAnchor.Bottom:
+                    s.BottomY = pY;
+                    break;
             }
         }
     }
@@ -388,6 +478,7 @@ namespace SEMTools4CD
         private CorelDRAW.Application CDWin;
         public CorelDRAW.Shape imgShape;
         public semImageData imgData;
+        public ShapeTransform transforms = null;
 
         public semImage(CorelDRAW.Application _CDWin, semImageData Data, CorelDRAW.Shape _imgShape)
         {
